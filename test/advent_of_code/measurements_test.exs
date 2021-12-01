@@ -13,4 +13,11 @@ defmodule MeasurementsTest do
   test "rocky see floor report" do
     assert AdventOfCode.Measurements.count([1000,2000,1000,2000,1000]) == 3
   end
+
+  test 'day01 run' do
+    measurements = File.read!("data/day01/input.txt")
+                   |> String.split("\n", trim: true)
+                   |> Enum.map(&Integer.parse/1)
+    assert AdventOfCode.Measurements.count(measurements) == 1549
+  end
 end
