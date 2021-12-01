@@ -60,7 +60,7 @@ defmodule AdventOfCode.Measurements do
 
       Extended example taken from https://adventofcode.com/2021/day/1#part2
       iex> AdventOfCode.Measurements.count_with_sliding_window([199,200,208,210,200,207,240,269,260,263,200,207,240,269,260,263])
-      6
+      8
 
       Extended example taken from https://adventofcode.com/2021/day/1#part2
       iex> AdventOfCode.Measurements.count_with_sliding_window([199,200,208,210,200,207,240,269,260,263,269,260,263,269,260,263])
@@ -72,17 +72,8 @@ defmodule AdventOfCode.Measurements do
   """
   def count_with_sliding_window(measurements) when length(measurements) === 0, do: 0
 
-  def windows(enumerable, size) do
-
-  end
-
   def count_with_sliding_window(measurements) when length(measurements) > 0 do
-    windows = [
-      Enum.chunk_every(measurements, 3, 4, []),
-      Enum.chunk_every(Enum.slice(measurements, 1, Enum.count(measurements)), 3, 4, []),
-      Enum.chunk_every(Enum.slice(measurements, 2, Enum.count(measurements)), 3, 4, []),
-      Enum.chunk_every(Enum.slice(measurements, 3, Enum.count(measurements)), 3, 4, [])
-    ]
+    windows = windows(measurements, 3)
 
     interim = Enum.map(windows, fn window -> Enum.map(window, fn w -> Enum.sum(w) end) end)
 
@@ -91,5 +82,11 @@ defmodule AdventOfCode.Measurements do
 
     deltas = derive_deltas(measurements_agg, previous_measurements_agg)
     count_positive_deltas(deltas)
+  end
+
+  def windows(enumerable, window_size) do
+    count = window_size
+    step = window_size + 1
+    Enum.map(0..window_size, fn i -> Enum.chunk_every(Enum.slice(enumerable, i, Enum.count(enumerable)), count, step, []) end)
   end
 end
