@@ -24,7 +24,7 @@ defmodule AdventOfCode.Sonar do
     iex> AdventOfCode.Sonar.count([199, 200, 208, 210,200,207,240,269,260, 263])
     7
   """
-  def count(measurements) when length(measurements) == 0, do: 0
+  def count(measurements) when Enum.empty?(measurements) == 0, do: 0
 
   def count(measurements) when length(measurements) > 0 do
     previous_measurements = [0] ++ Enum.slice(measurements, 0, Enum.count(measurements) - 1)
