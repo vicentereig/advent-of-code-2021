@@ -2,9 +2,9 @@ name: Elixir CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    types: [synchornized]
+    types: [ synchronized ]
   workflow_dispatch:
 
 env:
