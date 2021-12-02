@@ -1,4 +1,5 @@
 defmodule V2.NavigationTest do
+  import AdventOfCode.V2.Navigation
   use ExUnit.Case
   doctest AdventOfCode.V2.Navigation
 
@@ -12,7 +13,7 @@ defmodule V2.NavigationTest do
       {:ok, {:forward, 2}}
     ]
 
-    submarine = AdventOfCode.V2.Navigation.play(commands)
+    submarine = play(commands)
     assert submarine.x == 15
     assert submarine.y == 60
   end
@@ -24,7 +25,7 @@ defmodule V2.NavigationTest do
       |> String.split("\n")
       |> Enum.map(&AdventOfCode.Commands.parse/1)
 
-    %AdventOfCode.V2.Submarine{x: x, y: y, aim: _aim} = AdventOfCode.V2.Navigation.play(commands)
+    %AdventOfCode.V2.Submarine{x: x, y: y, aim: _aim} = play(commands)
     assert x * y === 1_842_742_223
   end
 end

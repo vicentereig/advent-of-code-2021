@@ -7,6 +7,7 @@ defmodule AdventOfCode.V2.Submarine do
 end
 
 defmodule AdventOfCode.V2.Navigation do
+  alias AdventOfCode.V2
   @moduledoc """
   This module models the second Navigation strategy
   """

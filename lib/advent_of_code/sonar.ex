@@ -71,19 +71,23 @@ defmodule AdventOfCode.Sonar do
         0
 
       false ->
-        windows = windows(measurements, 3)
-        interim = Enum.map(windows, fn window -> Enum.map(window, fn w -> Enum.sum(w) end) end)
-
-        measurements_agg =
-          Enum.zip_with(interim, fn x -> x end)
-          |> Enum.reduce([], fn x, acc -> acc ++ x end)
-
-        previous_measurements_agg =
-          [0] ++ Enum.slice(measurements_agg, 0, Enum.count(measurements_agg) - 1)
-
-        derive_deltas(measurements_agg, previous_measurements_agg)
-        |> count_positive_deltas
+        perform_count_with_sliding_window(measurements)
     end
+  end
+
+  def perform_count_with_sliding_window(measurements) do
+    windows = windows(measurements, 3)
+    interim = Enum.map(windows, fn window -> Enum.map(window, fn w -> Enum.sum(w) end) end)
+
+    measurements_agg =
+      Enum.zip_with(interim, fn x -> x end)
+      |> Enum.reduce([], fn x, acc -> acc ++ x end)
+
+    previous_measurements_agg =
+      [0] ++ Enum.slice(measurements_agg, 0, Enum.count(measurements_agg) - 1)
+
+    derive_deltas(measurements_agg, previous_measurements_agg)
+    |> count_positive_deltas
   end
 
   def count_positive_deltas(deltas) do
