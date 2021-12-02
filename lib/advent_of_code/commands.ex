@@ -1,4 +1,9 @@
 defmodule AdventOfCode.Commands do
+  @moduledoc """
+  This module parses the accepted commands
+  """
+  @moduledoc since: "1.0.0"
+
   @doc ~S"""
   Parses a command given a line
 

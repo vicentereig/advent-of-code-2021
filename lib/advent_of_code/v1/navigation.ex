@@ -1,8 +1,17 @@
 defmodule AdventOfCode.V1.Submarine do
+  @moduledoc """
+  This module models the first version of the Submarine
+  """
+  @moduledoc since: "1.0.0"
   defstruct x: 0, y: 0
 end
 
 defmodule AdventOfCode.V1.Navigation do
+  @moduledoc """
+  This module models the first Navigation strategy
+  """
+  @moduledoc since: "1.0.0"
+
   @doc ~S"""
   Plays a set of commands
 

@@ -1,8 +1,16 @@
 defmodule AdventOfCode.V2.Submarine do
+  @moduledoc """
+  This module models the second version of the Submarine
+  """
+  @moduledoc since: "1.0.0"
   defstruct aim: 0, y: 0, x: 0
 end
 
 defmodule AdventOfCode.V2.Navigation do
+  @moduledoc """
+  This module models the second Navigation strategy
+  """
+  @moduledoc since: "1.0.0"
   @doc ~S"""
   Plays a set of commands v2
 
