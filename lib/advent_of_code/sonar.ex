@@ -5,31 +5,31 @@ defmodule AdventOfCode.Sonar do
 
   ## Examples
     Empty Sonar Report
-    iex> AdventOfCode.Measurements.count([])
+    iex> AdventOfCode.Sonar.count([])
     0
 
     A Sonar Report with a single measurement
-    iex> AdventOfCode.Measurements.count([100])
+    iex> AdventOfCode.Sonar.count([100])
     0
 
     A Sonar Report over a flat sea floort.
-    iex> AdventOfCode.Measurements.count([1000,1000,1000,1000,1000])
+    iex> AdventOfCode.Sonar.count([1000,1000,1000,1000,1000])
     0
 
     A Sonar Report over a Valley
-    iex> AdventOfCode.Measurements.count([1000,1100,1200,1500,1200,1100,1000])
+    iex> AdventOfCode.Sonar.count([1000,1100,1200,1500,1200,1100,1000])
     3
 
     A Rocky Sea Floor Report (Taken from the problem statement: https://adventofcode.com/2021/day/1)
-    iex> AdventOfCode.Measurements.count([199, 200, 208, 210,200,207,240,269,260, 263])
+    iex> AdventOfCode.Sonar.count([199, 200, 208, 210,200,207,240,269,260, 263])
     7
   """
   def count(measurements) when length(measurements) == 0, do: 0
 
   def count(measurements) when length(measurements) > 0 do
     previous_measurements = [0] ++ Enum.slice(measurements, 0, Enum.count(measurements) - 1)
-    deltas = AdventOfCode.Measurements.derive_deltas(measurements, previous_measurements)
-    AdventOfCode.Measurements.count_positive_deltas(deltas)
+    deltas = AdventOfCode.Sonar.derive_deltas(measurements, previous_measurements)
+    AdventOfCode.Sonar.count_positive_deltas(deltas)
   end
 
   @doc ~S"""
@@ -37,23 +37,23 @@ defmodule AdventOfCode.Sonar do
 
     ## Examples
       Empty Sonar Report, Sliding Window of 3 Measuremetns
-      iex> AdventOfCode.Measurements.count_with_sliding_window([])
+      iex> AdventOfCode.Sonar.count_with_sliding_window([])
       0
 
       Another example taken from https://adventofcode.com/2021/day/1#part2
-      iex> AdventOfCode.Measurements.count_with_sliding_window([199,200,208,210,200,207,240,269,260,263])
+      iex> AdventOfCode.Sonar.count_with_sliding_window([199,200,208,210,200,207,240,269,260,263])
       5
 
       Extended example taken from https://adventofcode.com/2021/day/1#part2
-      iex> AdventOfCode.Measurements.count_with_sliding_window([199,200,208,210,200,207,240,269,260,263,200,207,240,269,260,263])
+      iex> AdventOfCode.Sonar.count_with_sliding_window([199,200,208,210,200,207,240,269,260,263,200,207,240,269,260,263])
       8
 
       Extended example taken from https://adventofcode.com/2021/day/1#part2
-      iex> AdventOfCode.Measurements.count_with_sliding_window([199,200,208,210,200,207,240,269,260,263,269,260,263,269,260,263])
+      iex> AdventOfCode.Sonar.count_with_sliding_window([199,200,208,210,200,207,240,269,260,263,269,260,263,269,260,263])
       5
 
       Another example
-      iex> AdventOfCode.Measurements.count_with_sliding_window([0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1])
+      iex> AdventOfCode.Sonar.count_with_sliding_window([0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1])
       6
   """
   def count_with_sliding_window(measurements) when length(measurements) === 0, do: 0
