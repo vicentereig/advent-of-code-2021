@@ -15,8 +15,10 @@ defmodule AdventOfCode.V1.Navigation do
     %AdventOfCode.V1.Submarine{x: 5, y: 5}
   """
   def play(commands) do
-    forward_commands = Enum.filter(commands, fn {:ok, {command, _position}} -> command == :forward end)
-    forward_deltas = Enum.map(forward_commands, fn {:ok, {:forward, position}} -> position  end)
+    forward_commands =
+      Enum.filter(commands, fn {:ok, {command, _position}} -> command == :forward end)
+
+    forward_deltas = Enum.map(forward_commands, fn {:ok, {:forward, position}} -> position end)
     x = Enum.sum(forward_deltas)
 
     up_commands = Enum.filter(commands, fn {:ok, {command, _position}} -> command == :up end)

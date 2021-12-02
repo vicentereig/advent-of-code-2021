@@ -63,32 +63,38 @@ defmodule AdventOfCode.Sonar do
 
     interim = Enum.map(windows, fn window -> Enum.map(window, fn w -> Enum.sum(w) end) end)
 
-    measurements_agg = Enum.zip_with(interim, fn x -> x end)
-                       |> Enum.reduce([], fn x, acc -> acc ++ x end)
-    previous_measurements_agg = [0] ++ Enum.slice(measurements_agg, 0, Enum.count(measurements_agg) - 1)
+    measurements_agg =
+      Enum.zip_with(interim, fn x -> x end)
+      |> Enum.reduce([], fn x, acc -> acc ++ x end)
+
+    previous_measurements_agg =
+      [0] ++ Enum.slice(measurements_agg, 0, Enum.count(measurements_agg) - 1)
 
     derive_deltas(measurements_agg, previous_measurements_agg)
     |> count_positive_deltas
   end
-
 
   def count_positive_deltas(deltas) do
     Enum.count(deltas, fn delta -> delta == 1 end)
   end
 
   def derive_deltas(enumerable1, enumerable2) do
-    Enum.zip_with([enumerable1, enumerable2], fn [current, prev] -> cond do
-                                                                      prev == 0 -> 0
-                                                                      current > prev -> 1
-                                                                      current < prev -> -1
-                                                                      true -> 0
-                                                                    end
+    Enum.zip_with([enumerable1, enumerable2], fn [current, prev] ->
+      cond do
+        prev == 0 -> 0
+        current > prev -> 1
+        current < prev -> -1
+        true -> 0
+      end
     end)
   end
 
   def windows(enumerable, window_size) do
     count = window_size
     step = window_size + 1
-    Enum.map(0..window_size, fn i -> Enum.chunk_every(Enum.slice(enumerable, i, Enum.count(enumerable)), count, step, []) end)
+
+    Enum.map(0..window_size, fn i ->
+      Enum.chunk_every(Enum.slice(enumerable, i, Enum.count(enumerable)), count, step, [])
+    end)
   end
 end

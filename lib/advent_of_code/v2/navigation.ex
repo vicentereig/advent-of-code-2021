@@ -11,11 +11,22 @@ defmodule AdventOfCode.V2.Navigation do
   """
   def play(commands) do
     submarine = %AdventOfCode.V2.Submarine{}
-    Enum.reduce(commands, submarine, fn command, sub -> case command do
-                                                          {:ok, {:forward, position}} -> %AdventOfCode.V2.Submarine{x: sub.x + position, y: sub.y + position * sub.aim, aim: sub.aim}
-                                                          {:ok, {:down, position}} ->  %AdventOfCode.V2.Submarine{x: sub.x, y: sub.y, aim: sub.aim + position}
-                                                          {:ok, {:up, position}} -> %AdventOfCode.V2.Submarine{x: sub.x, y: sub.y, aim: sub.aim - position}
-                                                        end
+
+    Enum.reduce(commands, submarine, fn command, sub ->
+      case command do
+        {:ok, {:forward, position}} ->
+          %AdventOfCode.V2.Submarine{
+            x: sub.x + position,
+            y: sub.y + position * sub.aim,
+            aim: sub.aim
+          }
+
+        {:ok, {:down, position}} ->
+          %AdventOfCode.V2.Submarine{x: sub.x, y: sub.y, aim: sub.aim + position}
+
+        {:ok, {:up, position}} ->
+          %AdventOfCode.V2.Submarine{x: sub.x, y: sub.y, aim: sub.aim - position}
+      end
     end)
   end
 end

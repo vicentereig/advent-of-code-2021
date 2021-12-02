@@ -11,18 +11,20 @@ defmodule V2.NavigationTest do
       {:ok, {:down, 8}},
       {:ok, {:forward, 2}}
     ]
+
     submarine = AdventOfCode.V2.Navigation.play(commands)
     assert submarine.x == 15
     assert submarine.y == 60
   end
 
   test 'day02 part 2 - solution' do
-    commands = File.read!("data/day02/input.txt")
-               |> String.trim()
-               |> String.split("\n")
-               |> Enum.map(&AdventOfCode.Commands.parse/1)
+    commands =
+      File.read!("data/day02/input.txt")
+      |> String.trim()
+      |> String.split("\n")
+      |> Enum.map(&AdventOfCode.Commands.parse/1)
 
     %AdventOfCode.V2.Submarine{x: x, y: y, aim: _aim} = AdventOfCode.V2.Navigation.play(commands)
-    assert x * y === 1842742223
+    assert x * y === 1_842_742_223
   end
 end
