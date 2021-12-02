@@ -1,4 +1,4 @@
-defmodule AdventOfCode.Measurements do
+defmodule AdventOfCode.Sonar do
   @doc ~S"""
   Counts the number of times a depth measurement increases from the previous measurement.
   There is no measurement before the first measurement.
@@ -30,20 +30,6 @@ defmodule AdventOfCode.Measurements do
     previous_measurements = [0] ++ Enum.slice(measurements, 0, Enum.count(measurements) - 1)
     deltas = AdventOfCode.Measurements.derive_deltas(measurements, previous_measurements)
     AdventOfCode.Measurements.count_positive_deltas(deltas)
-  end
-
-  def count_positive_deltas(deltas) do
-    Enum.count(deltas, fn delta -> delta == 1 end)
-  end
-
-  def derive_deltas(enumerable1, enumerable2) do
-    Enum.zip_with([enumerable1, enumerable2], fn [current, prev] -> cond do
-                                                                     prev == 0 -> 0
-                                                                     current > prev -> 1
-                                                                     current < prev -> -1
-                                                                     true -> 0
-                                                                   end
-    end)
   end
 
   @doc ~S"""
@@ -83,6 +69,21 @@ defmodule AdventOfCode.Measurements do
 
     derive_deltas(measurements_agg, previous_measurements_agg)
     |> count_positive_deltas
+  end
+
+
+  def count_positive_deltas(deltas) do
+    Enum.count(deltas, fn delta -> delta == 1 end)
+  end
+
+  def derive_deltas(enumerable1, enumerable2) do
+    Enum.zip_with([enumerable1, enumerable2], fn [current, prev] -> cond do
+                                                                      prev == 0 -> 0
+                                                                      current > prev -> 1
+                                                                      current < prev -> -1
+                                                                      true -> 0
+                                                                    end
+    end)
   end
 
   def windows(enumerable, window_size) do
