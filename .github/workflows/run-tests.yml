@@ -4,7 +4,8 @@ on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master ]
+    types: [synchornized]
+  workflow_dispatch:
 
 env:
   MIX_ENV: test
