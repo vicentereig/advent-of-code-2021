@@ -1,5 +1,6 @@
 defmodule AdventOfCode.DiagnosticsTest do
   use ExUnit.Case
+  doctest AdventOfCode.Diagnostics
 
   test 'day03 part 1' do
     report =
