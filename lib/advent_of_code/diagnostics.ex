@@ -1,4 +1,7 @@
 defmodule AdventOfCode.Diagnostics do
+  def calculate_lifer_support_rating(report) do
+    calculate_co2_scrubber_rating(report) * calculate_oxygen_generator_rating(report)
+  end
 
   def calculate_co2_scrubber_rating(report) do
     rating = find_co2_scrubber_rating(report)
@@ -34,26 +37,29 @@ defmodule AdventOfCode.Diagnostics do
             end)
 
           counts = count_bits(new_selected_numbers)
+
           cond do
             state.index >= length(counts) ->
               IO.inspect(state)
-              {:cont, %{ state | result: String.to_integer(Enum.at(new_selected_numbers, 0), 2)}}
+              {:cont, %{state | result: String.to_integer(Enum.at(new_selected_numbers, 0), 2)}}
 
             state.index < length(counts) ->
               next_index = state.index + 1
+
               {:cont,
-                %{
-                  numbers: new_selected_numbers,
-                  most_common_bit:
-                    if(
-                      next_index < length(counts) && Enum.at(counts, next_index).ones_count >=
-                        Enum.at(counts, next_index).zeros_count,
-                      do: "0",
-                      else: "1"
-                    ),
-                  index: state.index + 1,
-                  result: nil
-                }}
+               %{
+                 numbers: new_selected_numbers,
+                 most_common_bit:
+                   if(
+                     next_index < length(counts) &&
+                       Enum.at(counts, next_index).ones_count >=
+                         Enum.at(counts, next_index).zeros_count,
+                     do: "0",
+                     else: "1"
+                   ),
+                 index: state.index + 1,
+                 result: nil
+               }}
           end
       end
     end)
@@ -63,7 +69,6 @@ defmodule AdventOfCode.Diagnostics do
     rating = find_oxygen_generator_rating(report)
     String.to_integer(rating, 2)
   end
-
 
   def find_oxygen_generator_rating(report) do
     counts = count_bits(report)
@@ -94,20 +99,23 @@ defmodule AdventOfCode.Diagnostics do
             end)
 
           counts = count_bits(new_selected_numbers)
+
           cond do
             state.index >= length(counts) ->
-            IO.inspect(state)
-              {:cont, %{ state | result: String.to_integer(Enum.at(new_selected_numbers, 0), 2)}}
+              IO.inspect(state)
+              {:cont, %{state | result: String.to_integer(Enum.at(new_selected_numbers, 0), 2)}}
 
             state.index < length(counts) ->
               next_index = state.index + 1
+
               {:cont,
                %{
                  numbers: new_selected_numbers,
                  most_common_bit:
                    if(
-                     next_index < length(counts) && Enum.at(counts, next_index).ones_count >=
-                       Enum.at(counts, next_index).zeros_count,
+                     next_index < length(counts) &&
+                       Enum.at(counts, next_index).ones_count >=
+                         Enum.at(counts, next_index).zeros_count,
                      do: "1",
                      else: "0"
                    ),
