@@ -33,6 +33,21 @@ defmodule AdventOfCode.Bingo do
     find_winning_board(numbers, boards)
   end
 
+  def find_winning_boards(numbers, boards) do
+    initial_states = Enum.map(boards, &create_state/1)
+
+    Enum.reduce(numbers, initial_states, &play_all/2)
+    |> Enum.sort(fn prev, next -> length(prev.numbers_drawn) < length(next.numbers_drawn) end)
+  end
+
+  def is_winning?(state), do: is_winning_columns?(state) || is_winning_rows?(state)
+
+  def play_all(number, states) do
+    Enum.map(states, fn state ->
+      if is_winning?(state), do: state, else: mark_board(state, number)
+    end)
+  end
+
   def find_winning_board(numbers, boards) do
     initial_states = Enum.map(boards, &create_state/1)
 
