@@ -126,8 +126,9 @@ defmodule AdventOfCode.Diagnostics do
 
   def calculate_power_consumption(report) do
     counts = count_bits(report)
-    gamma_rate = String.to_integer(calculate_gamma_rate(counts), 2)
-    epsilon_rate = String.to_integer(calculate_epsilon_rate(counts), 2)
+    gamma_rate = counts |> calculate_gamma_rate |> String.to_integer(2)
+    epsilon_rate = counts |> calculate_epsilon_rate |> String.to_integer(2)
+
     gamma_rate * epsilon_rate
   end
 
@@ -140,7 +141,8 @@ defmodule AdventOfCode.Diagnostics do
     [%{ones_count: 1, zeros_count: 1},%{ones_count: 1, zeros_count: 1},%{ones_count: 1, zeros_count: 1},%{ones_count: 1, zeros_count: 1}]
   """
   def count_bits(report) do
-    Enum.map(report, &String.graphemes/1)
+    report
+    |> Enum.map(&String.graphemes/1)
     |> AdventOfCode.Matrix.transpose()
     |> Enum.map(&count_bits_in_word/1)
   end
@@ -154,9 +156,7 @@ defmodule AdventOfCode.Diagnostics do
     %{ones_count: 2, zeros_count: 2}
   """
   def count_bits_in_word(word) do
-    initial_counts = %{ones_count: 0, zeros_count: 0}
-
-    Enum.reduce(word, initial_counts, fn bit, counts ->
+    Enum.reduce(word, %{ones_count: 0, zeros_count: 0}, fn bit, counts ->
       case bit do
         "1" -> Map.put(counts, :ones_count, counts.ones_count + 1)
         "0" -> Map.put(counts, :zeros_count, counts.zeros_count + 1)
