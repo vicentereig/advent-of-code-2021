@@ -8,48 +8,18 @@ defmodule AdventOfCode.Bingo do
   end
 
   def find_winning_board(numbers, boards) do
-    numbers_in_six_packs = Enum.chunk_every(numbers, 6)
     initial_states = Enum.map(boards, &create_state/1)
 
-    states = Enum.reduce_while(numbers_in_six_packs, initial_states, &play_bingo_round/2)
-    IO.inspect(states)
-    calculate_score(states)
+    Enum.reduce_while(numbers, initial_states, &play_round/2)
+    |> calculate_score
   end
 
-  def calculate_score([board]), do: calculate_score(board)
-
-  def calculate_score(%{
-        board: board,
-        numbers_drawn: numbers_drawn,
-        marked_numbers: marked_numbers
-      }) do
-    Enum.map(Enum.chunk_every(numbers_drawn, 6), fn numbers ->
-      unmarked_numbers_scores =
-        Enum.map(board, fn row ->
-          Enum.filter(row, fn number -> not Enum.member?(marked_numbers, number) end)
-          |> Enum.sum()
-        end)
-      IO.inspect(numbers)
-      IO.inspect unmarked_numbers_scores
-      IO.inspect Enum.sum(unmarked_numbers_scores)
-      IO.inspect(Enum.sum(unmarked_numbers_scores) * List.last(numbers))
-      Enum.sum(unmarked_numbers_scores) * List.last(numbers)
-    end)
-  end
-
-  def create_state(board, marked_numbers \\ [], numbers_drawn \\ []),
-    do: %{
-      board: board,
-      marked_numbers: marked_numbers,
-      numbers_drawn: numbers_drawn
-    }
-
-  def play_bingo_round(numbers, states) do
-    updated_states = mark_all_boards(numbers, states)
+  def play_round(number, states) do
+    updated_states = Enum.map(states, fn state -> mark_board(state, number) end)
 
     case find_winning_state(updated_states) do
       {:ok, winning_state} -> {:halt, winning_state}
-      {:fail} -> {:cont, states}
+      {:fail} -> {:cont, updated_states}
     end
   end
 
@@ -61,7 +31,7 @@ defmodule AdventOfCode.Bingo do
   end
 
   def is_winning?(state) do
-    marked_set = MapSet.new(state.marked_numbers)
+    marked_set = MapSet.new(Map.get(state, :marked_numbers, []))
 
     Enum.any?(state.board, fn row ->
       row_set = MapSet.new(row)
@@ -69,13 +39,13 @@ defmodule AdventOfCode.Bingo do
     end)
   end
 
-  def mark_all_boards(numbers_drawn, states) do
-    Enum.map(states, fn state ->
-      updated_numbers_drawn = state.numbers_drawn ++ numbers_drawn
-      marked_numbers = state.marked_numbers ++ find_marked_numbers(state.board, numbers_drawn)
-      state_with_numbers_drawn = %{state | numbers_drawn: updated_numbers_drawn}
-      %{state_with_numbers_drawn | marked_numbers: marked_numbers}
-    end)
+  def mark_board(state, number) do
+    state
+    |> Map.put(:numbers_drawn, (state.numbers_drawn || []) ++ [number])
+    |> Map.put(
+      :marked_numbers,
+      (state.marked_numbers || []) ++ find_marked_numbers(state.board, [number])
+    )
   end
 
   def find_marked_numbers(board, numbers_drawn) do
@@ -90,4 +60,25 @@ defmodule AdventOfCode.Bingo do
     end)
     |> MapSet.to_list()
   end
+
+  def calculate_score(%{
+        board: board,
+        numbers_drawn: numbers_drawn,
+        marked_numbers: marked_numbers
+      }) do
+    unmarked_numbers_scores =
+      Enum.map(board, fn row ->
+        Enum.filter(row, fn number -> not Enum.member?(marked_numbers, number) end)
+        |> Enum.sum()
+      end)
+
+    Enum.sum(unmarked_numbers_scores) * List.last(numbers_drawn)
+  end
+
+  def create_state(board, marked_numbers \\ [], numbers_drawn \\ []),
+    do: %{
+      board: board,
+      marked_numbers: marked_numbers,
+      numbers_drawn: numbers_drawn
+    }
 end
