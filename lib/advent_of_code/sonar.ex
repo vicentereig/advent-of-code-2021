@@ -42,10 +42,10 @@ defmodule AdventOfCode.Sonar do
   end
 
   @doc ~S"""
-    Counts the depth increases using a sliding window of 3 measurements
+    Counts the depth increments using a sliding window of 3 measurements
 
     ## Examples
-      Empty Sonar Report, Sliding Window of 3 Measuremetns
+      Empty Sonar Report, Sliding Window of 3 Measurements
       iex> AdventOfCode.Sonar.count_with_sliding_window([])
       0
 

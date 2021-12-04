@@ -9,33 +9,48 @@ defmodule AdventOfCode.Diagnostics do
   end
 
   def calculate_co2_scrubber_rating(report) do
-    rating = find_co2_scrubber_rating(report)
-    String.to_integer(rating, 2)
+    counts = count_bits(report)
+
+    initial_state = %{
+      numbers: report,
+      most_common_bit:
+        if(Enum.at(counts, 0).ones_count >= Enum.at(counts, 0).zeros_count,
+          do: "0",
+          else: "1"
+        ),
+      index: 0,
+      rate: nil
+    }
+
+    iterations = 0..(length(report) * String.length(Enum.at(report, 0)) - 1)
+
+    Enum.reduce_while(iterations, initial_state, &find_co2_scrubber_rating/2)
+    |> String.to_integer(2)
   end
 
-  def co2_scrubber_rating_finder(_iter, state) do
+  def find_co2_scrubber_rating(_iter, state) do
     cond do
       length(state.numbers) == 1 ->
         {:halt, Enum.at(state.numbers, 0)}
 
       length(state.numbers) > 1 ->
-        new_selected_numbers =
+        newly_selected_numbers =
           Enum.filter(state.numbers, fn number ->
             String.at(number, state.index) == state.most_common_bit
           end)
 
-        counts = count_bits(new_selected_numbers)
+        counts = count_bits(newly_selected_numbers)
 
         cond do
           state.index >= length(counts) ->
-            {:cont, %{state | result: String.to_integer(Enum.at(new_selected_numbers, 0), 2)}}
+            {:cont, %{state | result: String.to_integer(Enum.at(newly_selected_numbers, 0), 2)}}
 
           state.index < length(counts) ->
             next_index = state.index + 1
 
             {:cont,
              %{
-               numbers: new_selected_numbers,
+               numbers: newly_selected_numbers,
                most_common_bit:
                  if(
                    next_index < length(counts) &&
@@ -51,70 +66,7 @@ defmodule AdventOfCode.Diagnostics do
     end
   end
 
-  def find_co2_scrubber_rating(report) do
-    counts = count_bits(report)
-
-    initial_state = %{
-      numbers: report,
-      most_common_bit:
-        if(Enum.at(counts, 0).ones_count >= Enum.at(counts, 0).zeros_count,
-          do: "0",
-          else: "1"
-        ),
-      index: 0,
-      rate: nil
-    }
-
-    last_iteration = length(report) * String.length(Enum.at(report, 0)) - 1
-    iterations = 0..last_iteration
-
-    Enum.reduce_while(iterations, initial_state, &co2_scrubber_rating_finder/2)
-  end
-
   def calculate_oxygen_generator_rating(report) do
-    rating = find_oxygen_generator_rating(report)
-    String.to_integer(rating, 2)
-  end
-
-  def oxygen_gen_rating_finder(_iter, state) do
-    cond do
-      length(state.numbers) == 1 ->
-        {:halt, Enum.at(state.numbers, 0)}
-
-      length(state.numbers) > 1 ->
-        new_selected_numbers =
-          Enum.filter(state.numbers, fn number ->
-            String.at(number, state.index) == state.most_common_bit
-          end)
-
-        counts = count_bits(new_selected_numbers)
-
-        cond do
-          state.index >= length(counts) ->
-            {:cont, %{state | result: String.to_integer(Enum.at(new_selected_numbers, 0), 2)}}
-
-          state.index < length(counts) ->
-            next_index = state.index + 1
-
-            {:cont,
-             %{
-               numbers: new_selected_numbers,
-               most_common_bit:
-                 if(
-                   next_index < length(counts) &&
-                     Enum.at(counts, next_index).ones_count >=
-                       Enum.at(counts, next_index).zeros_count,
-                   do: "1",
-                   else: "0"
-                 ),
-               index: state.index + 1,
-               result: nil
-             }}
-        end
-    end
-  end
-
-  def find_oxygen_generator_rating(report) do
     counts = count_bits(report)
 
     initial_state = %{
@@ -128,10 +80,48 @@ defmodule AdventOfCode.Diagnostics do
       rate: nil
     }
 
-    last_iteration = length(report) * String.length(Enum.at(report, 0)) - 1
-    iterations = 0..last_iteration
+    iterations = 0..(length(report) * String.length(Enum.at(report, 0)) - 1)
 
-    Enum.reduce_while(iterations, initial_state, &oxygen_gen_rating_finder/2)
+    Enum.reduce_while(iterations, initial_state, &find_oxygen_gen_rating/2)
+    |> String.to_integer(2)
+  end
+
+  def find_oxygen_gen_rating(_iter, state) do
+    cond do
+      length(state.numbers) == 1 ->
+        {:halt, Enum.at(state.numbers, 0)}
+
+      length(state.numbers) > 1 ->
+        newly_selected_numbers =
+          Enum.filter(state.numbers, fn number ->
+            String.at(number, state.index) == state.most_common_bit
+          end)
+
+        counts = count_bits(newly_selected_numbers)
+
+        cond do
+          state.index >= length(counts) ->
+            {:cont, %{state | result: String.to_integer(Enum.at(newly_selected_numbers, 0), 2)}}
+
+          state.index < length(counts) ->
+            next_index = state.index + 1
+
+            {:cont,
+             %{
+               numbers: newly_selected_numbers,
+               most_common_bit:
+                 if(
+                   next_index < length(counts) &&
+                     Enum.at(counts, next_index).ones_count >=
+                       Enum.at(counts, next_index).zeros_count,
+                   do: "1",
+                   else: "0"
+                 ),
+               index: state.index + 1,
+               result: nil
+             }}
+        end
+    end
   end
 
   def calculate_power_consumption(report) do
