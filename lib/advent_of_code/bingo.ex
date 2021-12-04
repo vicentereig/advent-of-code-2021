@@ -24,13 +24,22 @@ defmodule AdventOfCode.Bingo do
   end
 
   def find_winning_state(states) do
-    case Enum.filter(states, fn state -> is_winning?(state) end) do
+    case Enum.filter(states, fn state -> is_winning_rows?(state) || is_winning_columns?(state) end) do
       [] -> {:fail}
       [state | []] -> {:ok, state}
     end
   end
 
-  def is_winning?(state) do
+  def is_winning_columns?(state) do
+    marked_set = MapSet.new(Map.get(state, :marked_numbers, []))
+
+    Enum.any?(AdventOfCode.Matrix.transpose(state.board), fn row ->
+      row_set = MapSet.new(row)
+      MapSet.size(marked_set) > 0 and MapSet.subset?(row_set, marked_set)
+    end)
+  end
+
+  def is_winning_rows?(state) do
     marked_set = MapSet.new(Map.get(state, :marked_numbers, []))
 
     Enum.any?(state.board, fn row ->

@@ -149,8 +149,9 @@ defmodule AdventOfCode.Diagnostics do
     [%{ones_count: 1, zeros_count: 1},%{ones_count: 1, zeros_count: 1},%{ones_count: 1, zeros_count: 1},%{ones_count: 1, zeros_count: 1}]
   """
   def count_bits(report) do
-    matrix = Enum.map(report, &String.graphemes/1)
-    Enum.map(transpose(matrix), &count_bits_in_word/1)
+    Enum.map(report, &String.graphemes/1)
+    |> AdventOfCode.Matrix.transpose()
+    |> Enum.map(&count_bits_in_word/1)
   end
 
   @doc ~S"""
@@ -198,24 +199,5 @@ defmodule AdventOfCode.Diagnostics do
     Enum.map_join(counts, fn counts ->
       if counts.ones_count < counts.zeros_count, do: "1", else: "0"
     end)
-  end
-
-  @doc ~S"""
-  Transposes a vector or a matrix
-
-  ## Examples
-
-    iex> AdventOfCode.Diagnostics.transpose([[1,1]])
-    [[1], [1]]
-
-
-    iex> AdventOfCode.Diagnostics.transpose([[1,1], [2,2], [3,3]])
-    [[1,2,3], [1,2,3]]
-  """
-  def transpose([]), do: []
-  def transpose([[] | _]), do: []
-
-  def transpose(a) do
-    [Enum.map(a, &hd/1) | transpose(Enum.map(a, &tl/1))]
   end
 end

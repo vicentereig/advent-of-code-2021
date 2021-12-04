@@ -127,7 +127,23 @@ defmodule AdventOfCode.BingoTest do
       numbers_drawn: [0, 14, 24]
     }
 
-    assert AdventOfCode.Bingo.is_winning?(state)
+    assert AdventOfCode.Bingo.is_winning_rows?(state)
+  end
+
+  test "board is a winner, matching column" do
+    state = %{
+      board: [
+        [14, 21, 17, 24, 4],
+        [10, 16, 15, 9, 19],
+        [18, 8, 23, 26, 20],
+        [22, 11, 13, 6, 5],
+        [2, 0, 12, 3, 7]
+      ],
+      marked_numbers: [14,10,18,22,2],
+      numbers_drawn: []
+    }
+
+    assert AdventOfCode.Bingo.is_winning_columns?(state)
   end
 
   test "finds marked numbers" do
