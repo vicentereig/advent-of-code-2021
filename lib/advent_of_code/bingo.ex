@@ -11,8 +11,9 @@ defmodule AdventOfCode.Bingo do
     numbers_in_six_packs = Enum.chunk_every(numbers, 6)
     initial_states = Enum.map(boards, &create_state/1)
 
-    Enum.reduce_while(numbers_in_six_packs, initial_states, &play_bingo_round/2)
-    |> calculate_score
+    states = Enum.reduce_while(numbers_in_six_packs, initial_states, &play_bingo_round/2)
+    IO.inspect(states)
+    calculate_score(states)
   end
 
   def calculate_score([board]), do: calculate_score(board)
@@ -22,13 +23,18 @@ defmodule AdventOfCode.Bingo do
         numbers_drawn: numbers_drawn,
         marked_numbers: marked_numbers
       }) do
-    row_scores =
-      Enum.map(board, fn row ->
-        Enum.filter(row, fn number -> not Enum.member?(marked_numbers, number) end)
-        |> Enum.sum()
-      end)
-
-    Enum.sum(row_scores) * List.last(numbers_drawn)
+    Enum.map(Enum.chunk_every(numbers_drawn, 6), fn numbers ->
+      unmarked_numbers_scores =
+        Enum.map(board, fn row ->
+          Enum.filter(row, fn number -> not Enum.member?(marked_numbers, number) end)
+          |> Enum.sum()
+        end)
+      IO.inspect(numbers)
+      IO.inspect unmarked_numbers_scores
+      IO.inspect Enum.sum(unmarked_numbers_scores)
+      IO.inspect(Enum.sum(unmarked_numbers_scores) * List.last(numbers))
+      Enum.sum(unmarked_numbers_scores) * List.last(numbers)
+    end)
   end
 
   def create_state(board, marked_numbers \\ [], numbers_drawn \\ []),

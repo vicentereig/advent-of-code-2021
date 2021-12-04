@@ -12,11 +12,11 @@ defmodule AdventOfCode.BingoTest do
         [2, 0, 12, 3, 7]
       ],
       [
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0]
+        [22, 13, 17, 11, 0],
+        [8, 2, 23, 4, 24],
+        [21, 9, 14, 16, 7],
+        [6, 10, 3, 18, 5],
+        [1, 12, 20, 15, 19]
       ]
     ]
 
@@ -84,7 +84,7 @@ defmodule AdventOfCode.BingoTest do
   end
 
   test "calculates winning score" do
-    state = %{
+    states = [%{
       board: [
         [14, 21, 17, 24, 4],
         [10, 16, 15, 9, 19],
@@ -94,8 +94,8 @@ defmodule AdventOfCode.BingoTest do
       ],
       marked_numbers: [14, 21, 17, 24, 4, 23, 11, 5, 2, 0, 7],
       numbers_drawn: [14, 21, 17, 24, 4, 23, 11, 5, 2, 0, 7]
-    }
+    }]
 
-    4_512 == AdventOfCode.Bingo.calculate_score(state)
+    4_512 == AdventOfCode.Bingo.calculate_score(states)
   end
 end
