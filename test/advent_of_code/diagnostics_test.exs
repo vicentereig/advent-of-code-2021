@@ -17,7 +17,7 @@ defmodule AdventOfCode.DiagnosticsTest do
       |> String.trim()
       |> String.split("\n")
 
-    assert 2_981_085 == AdventOfCode.Diagnostics.calculate_lifer_support_rating(report)
+    assert 2_981_085 == AdventOfCode.Diagnostics.calculate_life_support_rating(report)
   end
 
   test 'calculates the power consumption' do

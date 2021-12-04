@@ -3,7 +3,8 @@ defmodule AdventOfCode.Diagnostics do
   This module models Diagnostic tooling
   """
   @moduledoc since: "1.0.0"
-  def calculate_lifer_support_rating(report) do
+
+  def calculate_life_support_rating(report) do
     calculate_co2_scrubber_rating(report) * calculate_oxygen_generator_rating(report)
   end
 

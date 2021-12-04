@@ -1,10 +1,36 @@
 defmodule AdventOfCode.Bingo do
+  @moduledoc """
+  Bingo subsystem
+  """
+  @moduledoc since: "1.0.0"
   def get_numbers do
-    []
+    [numbers | _] = File.read!("data/day04/input.txt") |> String.split("\n")
+
+    numbers
+    |> String.split(",")
+    |> Enum.map(&String.trim/1)
+    |> Enum.map(&String.to_integer/1)
   end
 
   def get_boards do
-    []
+    [_ | raw_boards] = File.read!("data/day04/input.txt") |> String.split("\n")
+
+    Enum.chunk_every(raw_boards, 6)
+    |> Enum.map(&parse_board/1)
+  end
+
+  def parse_board(raw_board) do
+    Enum.filter(raw_board, fn row -> row != "" end)
+    |> Enum.map(fn raw_numbers ->
+      String.split(raw_numbers)
+      |> Enum.map(&String.to_integer/1)
+    end)
+  end
+
+  def play do
+    numbers = get_numbers()
+    boards = get_boards()
+    find_winning_board(numbers, boards)
   end
 
   def find_winning_board(numbers, boards) do

@@ -2,6 +2,10 @@ defmodule AdventOfCode.BingoTest do
   use ExUnit.Case
   doctest AdventOfCode.Bingo
 
+  test "play" do
+    assert 51_776 == AdventOfCode.Bingo.play()
+  end
+
   test "finds a winning board" do
     boards = [
       [
@@ -139,7 +143,7 @@ defmodule AdventOfCode.BingoTest do
         [22, 11, 13, 6, 5],
         [2, 0, 12, 3, 7]
       ],
-      marked_numbers: [14,10,18,22,2],
+      marked_numbers: [14, 10, 18, 22, 2],
       numbers_drawn: []
     }
 

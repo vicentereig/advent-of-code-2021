@@ -1,4 +1,9 @@
 defmodule AdventOfCode.Matrix do
+  @moduledoc """
+  Matrix utilities
+  """
+  @moduledoc since: "1.0.0"
+
   @doc ~S"""
   Transposes a vector or a matrix
 
