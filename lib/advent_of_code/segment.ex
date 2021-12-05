@@ -47,51 +47,53 @@ defmodule AdventOfCode.Bingo.Segment do
 
     ### Examples
 
-    iex> a = AdventOfCode.Bingo.Segment.create([0,9], [5,9])
-    ...> b = AdventOfCode.Bingo.Segment.create([0,9], [2,9])
+    iex> a = AdventOfCode.Bingo.Segment.create([0,5], [10,5])
+    ...> b = AdventOfCode.Bingo.Segment.create([5,5], [2,9])
     ...> AdventOfCode.Bingo.Segment.intersect?(a, b)
     true
 
+    iex> a = AdventOfCode.Bingo.Segment.create([0,0], [0,5])
+    ...> b = AdventOfCode.Bingo.Segment.create([0,0], [5,0])
+    ...> AdventOfCode.Bingo.Segment.intersect?(a, b)
+    true
+
+    iex> a = AdventOfCode.Bingo.Segment.create([0,0], [0,5])
+    ...> b = AdventOfCode.Bingo.Segment.create([0,6], [0,12])
+    ...> AdventOfCode.Bingo.Segment.intersect?(a, b)
+    false
+
   """
   def intersect?(a, b) do
-    slopes = Enum.map([a, b], &slope/1)
-
-    case slopes do
-      # both lines are vertical an parallel
-      [nil, nil] ->
-        false
-
-      # segments are parallel
+    case Enum.map([a, b], &slope/1) do
+      # segments are parallel. vertical and parallel
       [slope, slope] ->
         false
 
       # segment a is vertical
       [nil, slope] ->
         x = a.start.x
-        c2 = b.start.y - slope * b.start.x
+        c2 = calculate_coef(b.start, slope)
         y = x * slope + c2
 
-        if (y > a.start.y and x < a.end.y) or (y > a.end.y and y < a.start.y),
-          do: true,
-          else: false
+        (y > a.start.y and x < a.end.y) or (y > a.end.y and y < a.start.y)
 
       # segment b is vertical
       [slope, nil] ->
         x = b.start.x
-        c1 = a.start.y - slope * a.start.x
+        c1 = calculate_coef(a.start, slope)
         y = x * slope + c1
 
-        if (y > b.start.y and x < b.end.y) or (y > b.end.y and y < b.start.y),
-          do: true,
-          else: false
+        (y > b.start.y and x < b.end.y) or (y > b.end.y and y < b.start.y)
 
       [slope_a, slope_b] ->
-        c_a = a.start.y - slope_a * a.start.x
-        c_b = b.start.y - slope_b * b.start.x
+        c_a = calculate_coef(a.start, slope_a)
+        c_b = calculate_coef(b.start, slope_b)
         x = (c_a - c_b) / (slope_a - slope_b)
 
         (x > a.start.x and x < a.end.x) or (x > a.end.x and x < a.start.x) or
           (x > b.start.x and x < b.end.x) or (x > b.end.x and x < b.start.x)
     end
   end
+
+  def calculate_coef(%Point{x: x, y: y}, slope), do: y - slope * x
 end
