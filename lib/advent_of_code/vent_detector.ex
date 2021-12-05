@@ -16,7 +16,7 @@ defmodule AdventOfCode.Bingo.VentDetector do
   @moduledoc """
     Detects Vents
   """
-  
+
   def create_vent([x1, y1], [x2, y2]),
     do: %Vent{
       start: %Point{x: x1, y: y1},
