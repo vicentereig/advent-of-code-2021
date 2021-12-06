@@ -20,7 +20,7 @@ defmodule AdventOfCode.Segment do
     }
 
   def skip_diagonals(segments) do
-    Enum.filter(segments, fn segment -> slope(segment) == 0.0 or slope(segment) == nil  end)
+    Enum.filter(segments, fn segment -> slope(segment) == 0.0 or slope(segment) == nil end)
   end
 
   @doc """
@@ -48,9 +48,9 @@ defmodule AdventOfCode.Segment do
     Determines whether the point intersects
   """
   def intersects?(%Segment{start: a, end: b}, c) do
-    cross_product = (c.y - a.y) * (b.x - a.x)  - (c.x - a.x) * (b.y - a.y)
-    dot_product = (c.x - a.x) * (b.x - a.x) + (c.y - a.y)*(b.y - a.y)
-    squared_length_ba = (b.x - a.x)*(b.x - a.x) + (b.y - a.y)*(b.y - a.y)
+    cross_product = (c.y - a.y) * (b.x - a.x) - (c.x - a.x) * (b.y - a.y)
+    dot_product = (c.x - a.x) * (b.x - a.x) + (c.y - a.y) * (b.y - a.y)
+    squared_length_ba = (b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y)
 
     cond do
       Kernel.abs(cross_product) > 0.0 -> false
@@ -68,8 +68,6 @@ defmodule AdventOfCode.Segment do
     a
   """
   def parse(raw_segment) do
-    IO.inspect(raw_segment)
-
     case String.split(raw_segment, ~r/,|->/)
          |> Enum.map(&String.trim/1)
          |> Enum.map(&String.to_integer/1) do
