@@ -50,7 +50,7 @@ defmodule AdventOfCode.Segment do
 
     case slopes do
       [nil, nil] ->
-        (x >= x1 and x <= x2) and (y >= y1 and y <= y2)
+        x >= x1 and x <= x2 and (y >= y1 and y <= y2)
 
       [nil, _] ->
         false
@@ -59,10 +59,27 @@ defmodule AdventOfCode.Segment do
         false
 
       [slope, slope] ->
-        (x >= x1 and x <= x2) and (y >= y1 and y <= y2)
+        x >= x1 and x <= x2 and (y >= y1 and y <= y2)
 
       [_slope, _slope_c] ->
         false
+    end
+  end
+
+  @doc """
+    Parses a segment
+    ### Examples
+    iex> a = AdventOfCode.Segment.create([0,9], [5,9])
+    ...> AdventOfCode.Segment.parse("0,9 -> 5,9")
+    a
+  """
+  def parse(raw_segment) do
+    IO.inspect(raw_segment)
+
+    case String.split(raw_segment, ~r/,|->/)
+         |> Enum.map(&String.trim/1)
+         |> Enum.map(&String.to_integer/1) do
+      [x1, y1, x2, y2] -> create([x1, y1], [x2, y2])
     end
   end
 end

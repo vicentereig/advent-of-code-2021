@@ -52,7 +52,7 @@ defmodule AdventOfCode.VentDetector do
       |> Enum.sort(fn a, b -> a.y >= b.y and a.x >= b.x end)
 
     Enum.map(0..(south_east.y - 1), fn x ->
-      Enum.map(0..((south_east.x + south_east.y)-1), fn y ->
+      Enum.map(0..(south_east.x + south_east.y - 1), fn y ->
         intersection_count(segments, x, y)
       end)
     end)
