@@ -27,8 +27,8 @@ defmodule SimfishTest do
 
   describe "encoding generations in bits" do
     test "cycle of a single fish" do
-      initial_population = 0x3
-      initial_timer_mask = 0x1
+      initial_population = String.to_integer("3", 16)
+      initial_timer_mask = String.to_integer("1", 16)
       initial_state = %{population: initial_population, timer_mask: initial_timer_mask}
 
       IO.puts("Initial state: #{Integer.to_string(initial_population, 16)}")
@@ -45,7 +45,7 @@ defmodule SimfishTest do
 
                  new_gen =
                    cond do
-                     offspring_size > 0 ->
+                     offspring_size > 0 || population - timer_mask < 0 ->
                        new_population = Enum.join(pop_parts, "6")
                        offspring = Enum.map(1..offspring_size, fn _i -> 8 end)
                        with_children = "#{new_population}#{Enum.join(offspring)}"
@@ -55,7 +55,7 @@ defmodule SimfishTest do
                        %{population: population - timer_mask, timer_mask: timer_mask}
                    end
 
-                 IO.puts("After #{day} days: #{Integer.to_string(new_gen.population, 16)}")
+                 IO.puts("After #{day} days: #{Integer.to_string(new_gen.population, 16)} offspring: #{offspring_size}")
                  new_gen
                end)
                |> Integer.to_string(16)
