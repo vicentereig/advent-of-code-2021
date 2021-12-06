@@ -16,13 +16,14 @@ defmodule VentDetectorTest do
         5,5 -> 8,2
     """
 
-    raw_segments
+    dangerous_areas = raw_segments
     |> String.split("\n")
     |> Enum.filter(fn raw -> raw != "" end)
     |> Enum.map(&AdventOfCode.Segment.parse/1)
-    |> AdventOfCode.VentDetector.plot_vents()
+     |> AdventOfCode.VentDetector.plot_vents()
     |> IO.inspect()
+    |> AdventOfCode.VentDetector.count_dangerous_areas
 
-    assert false
+    assert dangerous_areas == 5
   end
 end

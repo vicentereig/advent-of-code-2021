@@ -19,6 +19,10 @@ defmodule AdventOfCode.Segment do
       end: %Point{x: x2, y: y2}
     }
 
+  def skip_diagonals(segments) do
+    Enum.filter(segments, fn segment -> slope(segment) == 0.0 or slope(segment) == nil  end)
+  end
+
   @doc """
     Determines the slope of a line out of the rise and run: rise/run
     ### Examples
@@ -43,26 +47,16 @@ defmodule AdventOfCode.Segment do
   @doc """
     Determines whether the point intersects
   """
-  def intersects?(segment, %Point{x: x, y: y}) do
-    %Segment{start: %Point{x: x1, y: y1}, end: %Point{x: x2, y: y2}} = segment
-    a_to_cell = %Segment{start: %Point{x: x, y: y}, end: %Point{x: x2, y: y2}}
-    slopes = [Segment.slope(segment), Segment.slope(a_to_cell)]
+  def intersects?(%Segment{start: a, end: b}, c) do
+    cross_product = (c.y - a.y) * (b.x - a.x)  - (c.x - a.x) * (b.y - a.y)
+    dot_product = (c.x - a.x) * (b.x - a.x) + (c.y - a.y)*(b.y - a.y)
+    squared_length_ba = (b.x - a.x)*(b.x - a.x) + (b.y - a.y)*(b.y - a.y)
 
-    case slopes do
-      [nil, nil] ->
-        x >= x1 and x <= x2 and (y >= y1 and y <= y2)
-
-      [nil, _] ->
-        false
-
-      [_, nil] ->
-        false
-
-      [slope, slope] ->
-        x >= x1 and x <= x2 and (y >= y1 and y <= y2)
-
-      [_slope, _slope_c] ->
-        false
+    cond do
+      Kernel.abs(cross_product) > 0.0 -> false
+      dot_product < 0 -> false
+      dot_product > squared_length_ba -> false
+      true -> true
     end
   end
 

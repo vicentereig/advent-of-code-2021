@@ -3,7 +3,12 @@ defmodule AdventOfCode.VentDetector do
     Detects Vents
   """
 
-  def count_danger_areas(_), do: 0
+  def count_dangerous_areas([]), do: 0
+  def count_dangerous_areas(canvas) do
+    canvas
+    |> List.flatten
+    |> Enum.count(fn area -> area > 1 end)
+  end
 
   @doc """
     Plots all segments in a canvas.
@@ -13,6 +18,7 @@ defmodule AdventOfCode.VentDetector do
   """
   def plot_vents(segments) do
     segments
+    |> AdventOfCode.Segment.skip_diagonals
     |> create_canvas
   end
 
@@ -26,10 +32,9 @@ defmodule AdventOfCode.VentDetector do
     2
   """
   def intersection_count(segments, x, y) do
-    Enum.filter(segments, fn segment ->
-      AdventOfCode.Segment.intersects?(segment, %Point{x: x, y: y})
+    Enum.reduce(segments, 0, fn segment, count ->
+      if AdventOfCode.Segment.intersects?(segment, %Point{x: x, y: y}), do: count + 1, else: count
     end)
-    |> Enum.count()
   end
 
   @doc """
@@ -44,15 +49,15 @@ defmodule AdventOfCode.VentDetector do
     ...> |> AdventOfCode.VentDetector.create_canvas
     [[2,2,2,1,1],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
   """
-
+  # gotta calculate the bounding box
   def create_canvas(segments) do
     [south_east | _] =
       Enum.flat_map(segments, fn s -> [s.start, s.end] end)
       |> Enum.uniq()
       |> Enum.sort(fn a, b -> a.y >= b.y and a.x >= b.x end)
 
-    Enum.map(0..(south_east.y - 1), fn x ->
-      Enum.map(0..(south_east.x + south_east.y - 1), fn y ->
+    Enum.map(0..(south_east.x - 1), fn x ->
+      Enum.map(0..(south_east.y - 1), fn y ->
         intersection_count(segments, x, y)
       end)
     end)
