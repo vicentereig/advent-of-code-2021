@@ -1,4 +1,4 @@
 defmodule VentDetectorTest do
   use ExUnit.Case
-  doctest AdventOfCode.Bingo.VentDetector
+  doctest AdventOfCode.VentDetector
 end
