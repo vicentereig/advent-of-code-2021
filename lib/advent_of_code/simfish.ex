@@ -1,4 +1,7 @@
 defmodule AdventOfCode.Simfish do
+  @moduledoc """
+  Simfish slow and not so slow.
+  """
   def evolve_over(initial_population, duration_in_days) do
     Enum.reduce(1..duration_in_days, initial_population, fn _day, population ->
       Enum.flat_map(population, fn fish ->
@@ -10,26 +13,27 @@ defmodule AdventOfCode.Simfish do
     end)
   end
 
-  #    [3]
-  #    [2]
-  #    [1]
-  #    [0]
-  #    [6, 8]
-  #    [5, 7]
-  #    [4, 6]
-  #    [3, 5]
-  #    [2, 4]
-  #    [1, 3]
-  #    [0, 2]
-  #    [6, 8, 1] (0x618)
-  #    [5, 7, 0] (0x507)
-  #    [4, 6, 6, 8] (0x4668)
-  #    [3, 5, 5, 7] 0x3557
-  #    [2, 4, 4, 6]
-  #    [1, 3, 3, 5]
-  #    [0, 2, 2, 4]
-  #    [6, 1, 1, 3, 8] 0x61138
-  #    [6, 1, 1, 3, 8] 0x61138
-  def faster_evolve_over([], 0) do
+  def faster_evolve_over(initial_population, duration_in_days) do
+    fish_distro =
+      initial_population
+      |> Enum.frequencies()
+
+    Enum.reduce(1..duration_in_days, fish_distro, fn _day, fish ->
+      {zeros, rest} = Map.pop(fish, 0, 0)
+
+      Enum.reduce(0..8, rest, fn
+        8, acc -> Map.put(acc, 8, zeros)
+        6, acc -> Map.put(acc, 6, zeros + Map.get(rest, 7, 0))
+        remaining, acc -> Map.put(acc, remaining, Map.get(rest, remaining + 1, 0))
+      end)
+    end)
+    |> Map.values()
+    |> Enum.sum()
+  end
+
+  def parse(raw_fish) do
+    raw_fish
+    |> String.split(",")
+    |> Enum.map(&String.to_integer/1)
   end
 end

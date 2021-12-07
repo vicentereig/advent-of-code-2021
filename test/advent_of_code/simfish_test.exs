@@ -19,56 +19,23 @@ defmodule SimfishTest do
     assert 5934 == Simfish.evolve_over(initial_population, 80) |> length
   end
 
-  @tag :skip
-  test "finds 26984457539 fish after 256 days" do
-    initial_population = [3, 4, 3, 1, 2]
-    assert 26_984_457_539 == Simfish.evolve_over(initial_population, 256) |> length
+  test "finds yyy fish after 256 days" do
+    assert 26_984_457_539 ==
+             [3, 4, 3, 1, 2]
+             |> Simfish.faster_evolve_over(256)
   end
 
-  describe "encoding generations in bits" do
-    test "cycle of a single fish" do
-      initial_population = String.to_integer("3", 16)
-      initial_timer_mask = String.to_integer("1", 16)
-      initial_state = %{population: initial_population, timer_mask: initial_timer_mask}
-
-      IO.puts("Initial state: #{Integer.to_string(initial_population, 16)}")
-
-      assert 5 ==
-               Enum.reduce(1..18, initial_state, fn day,
-                                                    %{
-                                                      population: population,
-                                                      timer_mask: timer_mask
-                                                    } ->
-                 pop_parts = String.split(Integer.to_string(population, 16), "0")
-
-                 offspring_size = Enum.count(pop_parts) - 1
-
-                 new_gen =
-                   cond do
-                     offspring_size > 0 || population - timer_mask < 0 ->
-                       new_population = Enum.join(pop_parts, "6")
-                       offspring = Enum.map(1..offspring_size, fn _i -> 8 end)
-                       with_children = "#{new_population}#{Enum.join(offspring)}"
-                       IO.inspect(with_children, label: "new kids")
-                       %{population: String.to_integer(with_children, 16), timer_mask: timer_mask + (timer_mask <<< 4)}
-                     offspring_size == 0 ->
-                       %{population: population - timer_mask, timer_mask: timer_mask}
-                   end
-
-                 IO.puts("After #{day} days: #{Integer.to_string(new_gen.population, 16)} offspring: #{offspring_size}")
-                 new_gen
-               end)
-               |> Integer.to_string(16)
-               |> String.length()
-    end
+  test "finds xxx fish after 256 days" do
+    assert 1_710_623_015_163 ==
+             File.read!("data/day06/input.txt")
+             |> Simfish.parse()
+             |> Simfish.faster_evolve_over(256)
   end
 
   test "day06 part 1 - finds 380_758 fish after 18 days" do
     assert 380_758 ==
              File.read!("data/day06/input.txt")
-             |> String.split(",")
-             |> Enum.map(&String.to_integer/1)
-             |> Simfish.evolve_over(80)
-             |> length
+             |> Simfish.parse()
+             |> Simfish.faster_evolve_over(80)
   end
 end
