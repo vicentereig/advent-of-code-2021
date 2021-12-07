@@ -37,12 +37,9 @@ defmodule CrabmarineSwarn do
 
     0..max_position
     |> Enum.map(fn destination ->
-      all_crabs
-      |> Enum.map(fn other -> Crabmarine.move_v2(other, destination) end)
-    end)
-    |> Enum.reduce([], fn moves, states ->
+      moves = Enum.map(all_crabs, fn other -> Crabmarine.move_v2(other, destination) end)
       cost = Enum.map(moves, fn m -> m.fuel end) |> Enum.sum()
-      states ++ [%{moves: moves, cost: cost}]
+      %{moves: moves, cost: cost}
     end)
     |> Enum.min_by(fn c -> c.cost end)
   end
