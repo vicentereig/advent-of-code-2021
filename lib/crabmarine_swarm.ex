@@ -18,26 +18,28 @@ defmodule CrabmarineSwarn do
   end
 
   def find_cheapest_move(all_crabs) do
-    %Crabmarine{to: max_position} = Enum.max_by(all_crabs, fn c -> c.to end)
+    {
+      %Crabmarine{to: min_to, from: _min_from, fuel: _min_fuel},
+      %Crabmarine{to: max_to, from: _max_from, fuel: _max_fuel}
+    } = Enum.min_max_by(all_crabs, fn c -> c.to end)
 
-    0..max_position
+    min_to..max_to
     |> Enum.map(fn destination ->
-      all_crabs
-      |> Enum.map(fn other -> Crabmarine.move(other, destination) end)
-    end)
-    |> Enum.reduce([], fn moves, states ->
+      moves = Enum.map(all_crabs, fn crab -> Crabmarine.move(crab, destination) end)
       cost = Enum.map(moves, fn m -> m.fuel end) |> Enum.sum()
-      states ++ [%{moves: moves, cost: cost}]
+      %{moves: moves, cost: cost}
     end)
     |> Enum.min_by(fn c -> c.cost end)
   end
 
   def find_cheapest_move_v2(all_crabs) do
-    %Crabmarine{to: max_position} = Enum.max_by(all_crabs, fn c -> c.to end)
+    {%Crabmarine{to: min_to, from: _min_from, fuel: _min_fuel},
+     %Crabmarine{to: max_to, from: _max_from, fuel: _max_fuel}} =
+      Enum.min_max_by(all_crabs, fn c -> c.to end)
 
-    0..max_position
+    min_to..max_to
     |> Enum.map(fn destination ->
-      moves = Enum.map(all_crabs, fn other -> Crabmarine.move_v2(other, destination) end)
+      moves = Enum.map(all_crabs, fn crab -> Crabmarine.move_v2(crab, destination) end)
       cost = Enum.map(moves, fn m -> m.fuel end) |> Enum.sum()
       %{moves: moves, cost: cost}
     end)
