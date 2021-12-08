@@ -34,7 +34,7 @@ defmodule CrabmarineSwarn do
 
   def find_all(all_crabs) do
     {%Crabmarine{to: min_to, from: _min_from, fuel: _min_fuel},
-      %Crabmarine{to: max_to, from: _max_from, fuel: _max_fuel}} =
+     %Crabmarine{to: max_to, from: _max_from, fuel: _max_fuel}} =
       Enum.min_max_by(all_crabs, fn c -> c.to end)
 
     min_to..max_to
