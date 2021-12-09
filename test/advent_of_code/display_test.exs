@@ -56,7 +56,20 @@ defmodule AdventOfCode.DisplayTest do
              |> AdventOfCode.Display.create_decoder()
   end
 
-  test "decode an easy number" do
+  test "decode an easy number: 7" do
+    %AdventOfCode.Note{patterns: patterns} =
+      AdventOfCode.Note.parse(
+        "edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc"
+      )
+
+    assert 7 ==
+             patterns
+             |> AdventOfCode.Display.find_known_patterns()
+             |> AdventOfCode.Display.create_decoder()
+             |> AdventOfCode.Display.decode_number("cgb")
+  end
+
+  test "decode an easy number: 4" do
     %AdventOfCode.Note{patterns: patterns} =
       AdventOfCode.Note.parse(
         "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf"

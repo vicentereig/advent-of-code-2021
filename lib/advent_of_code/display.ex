@@ -55,6 +55,7 @@ defmodule AdventOfCode.Display do
       |> Enum.map(fn x ->
         Map.get(decoder, x, "x")
       end)
+      |> Enum.sort
       |> Enum.join()
 
     Enum.find(@mappings, fn {number, pattern} -> pattern == decoded_segment end)
