@@ -38,12 +38,60 @@ defmodule AdventOfCode.DisplayTest do
              # 7
              "dab" => "acf",
              # 1
-             # 4
              "ab" => "cf",
+             # 4
              "eafb" => "bcdf"
            } == AdventOfCode.Display.find_known_patterns(patterns)
   end
 
+  test "builds the encoder for easy known patterns" do
+    %AdventOfCode.Note{patterns: patterns} =
+      AdventOfCode.Note.parse(
+        "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf"
+      )
+
+    assert %{"a" => "c", "d" => "a", "b" => "f", "e" => "b", "f" => "d"} ==
+             patterns
+             |> AdventOfCode.Display.find_known_patterns()
+             |> AdventOfCode.Display.create_decoder()
+  end
+
+  test "decode an easy number" do
+    %AdventOfCode.Note{patterns: patterns} =
+      AdventOfCode.Note.parse(
+        "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf"
+      )
+
+    assert 4 ==
+             patterns
+             |> AdventOfCode.Display.find_known_patterns()
+             |> AdventOfCode.Display.create_decoder()
+             |> AdventOfCode.Display.decode_number("eafb")
+  end
+
+  # build a decoder out of patterns:
+  #
+  #      dddd
+  #     e    a
+  #     e    a
+  #      ffff
+  #     g    b
+  #     g    b
+  #      cccc
+  # table of equivalences:
+  # dab -> acf -> 7
+  #  d -> a
+  #  a -> c
+  #  b -> f
+  #  c -> x
+  #  e -> x
+  #  g -> x
+  # iterate over all patterns -> build decoder as above
+  #    starting with the easy patterns
+  #    when matching partial encodings:  acdeg -> c,x,a,x,x
+  # take decoded an apply it to all ouputs
+
+  # to_integer and join
   test "maps an output" do
     assert 5353 ==
              "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf"

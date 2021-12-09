@@ -35,30 +35,33 @@ defmodule AdventOfCode.Display do
     end)
   end
 
-  def decode(_note) do
-    # build a decoder out of patterns:
-    #
-    #      dddd
-    #     e    a
-    #     e    a
-    #      ffff
-    #     g    b
-    #     g    b
-    #      cccc
-    # table of equivalences:
-    # dab -> acf -> 7
-    #  d -> a
-    #  a -> c
-    #  b -> f
-    #  c -> x
-    #  e -> x
-    #  g -> x
-    # iterate over all patterns -> build decoder as above
-    #    starting with the easy patterns
-    #    when matching partial encodings:  acdeg -> c,x,a,x,x
-    # take decoded an apply it to all ouputs
+  def create_decoder(known_patterns) do
+    Enum.reduce(known_patterns, %{}, fn {encoded, decoded}, acc ->
+      encoded_bits = String.split(encoded, "") |> Enum.filter(fn x -> x != "" end)
+      decoded_bits = String.split(decoded, "") |> Enum.filter(fn x -> x != "" end)
 
-    # to_integer and join
+      Enum.zip_reduce(encoded_bits, decoded_bits, %{}, fn d, e, map ->
+        Map.put(map, d, e)
+      end)
+      |> Map.merge(acc)
+    end)
+  end
+
+  def decode_number(decoder, encoded_number) do
+    decoded_segment =
+      encoded_number
+      |> String.split("")
+      |> Enum.filter(fn x -> x != "" end)
+      |> Enum.map(fn x ->
+        Map.get(decoder, x, "x")
+      end)
+      |> Enum.join()
+
+    Enum.find(@mappings, fn {number, pattern} -> pattern == decoded_segment end)
+    |> then(fn {number, _} -> number end)
+  end
+
+  def decode(_note) do
     0
   end
 
