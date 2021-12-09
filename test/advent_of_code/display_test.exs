@@ -15,8 +15,39 @@ defmodule AdventOfCode.DisplayTest do
       gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
     """
 
-    notes = AdventOfCode.Display.parse(input)
+    assert 26 ==
+             input
+             |> AdventOfCode.Display.parse()
+             |> AdventOfCode.Display.count_easy_numbers()
+  end
 
-    assert 10 == length(notes)
+  test "find the easy digits - part 1" do
+    assert 476 ==
+             File.read!("data/day08/input.txt")
+             |> AdventOfCode.Display.parse()
+             |> AdventOfCode.Display.count_easy_numbers()
+  end
+
+  test "finds the easy patterns" do
+    %AdventOfCode.Note{patterns: patterns} =
+      AdventOfCode.Note.parse(
+        "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf"
+      )
+
+    assert %{
+             # 7
+             "dab" => "acf",
+             # 1
+             # 4
+             "ab" => "cf",
+             "eafb" => "bcdf"
+           } == AdventOfCode.Display.find_known_patterns(patterns)
+  end
+
+  test "maps an output" do
+    assert 5353 ==
+             "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf"
+             |> AdventOfCode.Display.parse()
+             |> AdventOfCode.Display.decode()
   end
 end
