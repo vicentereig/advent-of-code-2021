@@ -20,7 +20,7 @@ defmodule AdventOfCode.Display do
   def find_known_patterns(patterns) do
     Enum.reduce(patterns, %{}, fn pattern, known_patterns ->
       Enum.find(@mappings, fn {number, mapping} ->
-        Enum.member?([1, 7, 4], number) and String.length(pattern) == String.length(mapping)
+        Enum.member?([1, 4, 7, 8], number) and String.length(pattern) == String.length(mapping)
       end)
       |> then(fn mapping ->
         cond do
@@ -36,14 +36,21 @@ defmodule AdventOfCode.Display do
   end
 
   def create_decoder(known_patterns) do
-    Enum.reduce(known_patterns, %{}, fn {encoded, decoded}, acc ->
+    Map.keys(known_patterns)
+    |> Enum.sort()
+    |> Enum.reduce(%{}, fn encoded, acc ->
       encoded_bits = String.split(encoded, "") |> Enum.filter(fn x -> x != "" end)
+      decoded = Map.get(known_patterns, encoded)
       decoded_bits = String.split(decoded, "") |> Enum.filter(fn x -> x != "" end)
+      IO.inspect(encoded_bits, label: "encoded_bits")
+      IO.inspect(decoded_bits, label: "decoded_bits")
 
       Enum.zip_reduce(encoded_bits, decoded_bits, %{}, fn d, e, map ->
-        Map.put(map, d, e)
+        if Enum.member?(Map.values(acc), d), do: map, else: Map.put(map, d, e)
       end)
+      |> IO.inspect(label: "decoder")
       |> Map.merge(acc)
+      |> IO.inspect(label: "final_decoder")
     end)
   end
 
@@ -55,15 +62,13 @@ defmodule AdventOfCode.Display do
       |> Enum.map(fn x ->
         Map.get(decoder, x, "x")
       end)
-      |> Enum.sort
+      |> Enum.sort()
       |> Enum.join()
-
-    Enum.find(@mappings, fn {number, pattern} -> pattern == decoded_segment end)
-    |> then(fn {number, _} -> number end)
   end
 
-  def decode(_note) do
-    0
+  def to_decimal(decoded_segment) do
+    Enum.find(@mappings, fn {number, pattern} -> pattern == decoded_segment end)
+    |> then(fn {number, _} -> number end)
   end
 
   def parse(input) do
