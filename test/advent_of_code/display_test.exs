@@ -46,13 +46,21 @@ defmodule AdventOfCode.DisplayTest do
            } == AdventOfCode.Display.find_known_patterns(patterns)
   end
 
-  test "builds the encoder for easy known patterns" do
+  #  decoded <- encoded
+  #   aaaa       dddd
+  #  b    c c   e    a
+  #  b    c c   e    a
+  #   dddd       ffff
+  #  e    f f   g    b
+  #  e    f f   g    b
+  #   gggg       cccc  
+  test "builds the decoder" do
     %AdventOfCode.Note{patterns: patterns} =
       AdventOfCode.Note.parse(
         "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf"
       )
 
-    assert %{"a" => "c", "d" => "a", "b" => "f", "e" => "b", "f" => "d", "c" => "b", "g" => "e"} ==
+    assert %{"d" => "a", "e" => "b", "a" => "c", "f" => "d", "g" => "e", "b" => "f", "c" => "g"} ==
              patterns
              |> AdventOfCode.Display.find_known_patterns()
              |> AdventOfCode.Display.create_decoder()
@@ -109,7 +117,6 @@ defmodule AdventOfCode.DisplayTest do
              patterns
              |> AdventOfCode.Display.find_known_patterns()
              |> AdventOfCode.Display.create_decoder()
-             |> IO.inspect()
              |> AdventOfCode.Display.decode_number("cdfeb")
   end
 
