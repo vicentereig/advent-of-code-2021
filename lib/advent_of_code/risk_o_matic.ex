@@ -21,14 +21,13 @@ defmodule AdventOfCode.RiskOMatic do
     |> Enum.with_index()
     |> Enum.flat_map(fn {row, x} ->
       row
-      |> Enum.with_index()
-      |> Enum.filter(fn {height, y} ->
+      |> Enum.with_index(fn height, y -> %{x: x, y: y, height: height} end)
+      |> Enum.filter(fn %{height: height, y: y} ->
         height < get_height_at(heightmap, x, y - 1) and
           height < get_height_at(heightmap, x, y + 1) and
           height < get_height_at(heightmap, x + 1, y) and
           height < get_height_at(heightmap, x - 1, y)
       end)
-      |> Enum.map(fn {height, _} -> height end)
     end)
   end
 
@@ -37,10 +36,38 @@ defmodule AdventOfCode.RiskOMatic do
     |> Enum.map(&(&1 + 1))
   end
 
+  def find_basins(heightmap, basin_starting_points) do
+    basin_starting_points
+    |> Enum.map(fn %{x: x, y: y, height: height} = basin_starting_point ->
+      [
+        %{height: get_height_at(heightmap, x, y + 1), x: x, y: y + 1},
+        %{height: get_height_at(heightmap, x, y - 1), x: x, y: y - 1},
+        %{height: get_height_at(heightmap, x - 1, y), x: x - 1, y: y},
+        %{height: get_height_at(heightmap, x + 1, y), x: x + 1, y: y}
+      ]
+      |> Enum.filter(fn %{height: h} -> h != :infinity and h != 9 and h > height end)
+      |> then(fn next_points -> find_basins(heightmap, next_points) end)
+      |> List.flatten()
+      |> then(fn basin_tail -> [basin_starting_point] ++ basin_tail end)
+      |> MapSet.new()
+      |> MapSet.to_list()
+      |> Enum.sort_by(fn %{height: h} -> h end)
+    end)
+  end
+
+  def solve_part2(basins) do
+    basins
+    |> Enum.map(&length/1)
+    |> Enum.sort_by(fn l -> -l end)
+    |> Enum.slice(0, 3)
+    |> Enum.product()
+  end
+
   def solve_part1(input) do
     input
     |> create_heightmap
     |> find_low_points
+    |> Enum.map(fn %{height: height} -> height end)
     |> calculate_risk_levels
     |> Enum.sum()
   end
