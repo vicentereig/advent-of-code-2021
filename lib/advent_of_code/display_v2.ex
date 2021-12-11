@@ -1,6 +1,6 @@
 defmodule AdventOfCode.DisplayV2 do
-  alias AdventOfCode.Note
   alias AdventOfCode.Display
+  alias AdventOfCode.Note
 
   @moduledoc """
     Models the Seven Segment Search second attempt
@@ -83,7 +83,7 @@ defmodule AdventOfCode.DisplayV2 do
     |> Enum.sum()
   end
 
-  def decode_all_notes() do
+  def decode_all_notes do
     File.read!("data/day08/input.txt")
     |> Display.parse()
     |> decode_numbers
