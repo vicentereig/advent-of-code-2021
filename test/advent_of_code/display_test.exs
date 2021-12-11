@@ -46,14 +46,14 @@ defmodule AdventOfCode.DisplayTest do
            } == AdventOfCode.Display.find_known_patterns(patterns)
   end
 
-  #  decoded <- encoded
-  #   aaaa       dddd
-  #  b    c c   e    a
-  #  b    c c   e    a
-  #   dddd       ffff
-  #  e    f f   g    b
-  #  e    f f   g    b
-  #   gggg       cccc  
+  #  encoded  -> decoded
+  #    dddd       aaaa
+  #   e    a     b    c
+  #   e    a     b    c
+  #    ffff       dddd
+  #   g    b     e    f
+  #   g    b     e    f
+  @tag :skip
   test "builds the decoder" do
     %AdventOfCode.Note{patterns: patterns} =
       AdventOfCode.Note.parse(
@@ -72,14 +72,14 @@ defmodule AdventOfCode.DisplayTest do
         "edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc"
       )
 
-    assert 7 ==
+    assert "acf" ==
              patterns
              |> AdventOfCode.Display.find_known_patterns()
              |> AdventOfCode.Display.create_decoder()
              |> AdventOfCode.Display.decode_number("cgb")
-             |> AdventOfCode.Display.to_decimal()
   end
 
+  @tag :skip
   test "decode an easy number: 8" do
     %AdventOfCode.Note{patterns: patterns} =
       AdventOfCode.Note.parse(
@@ -93,6 +93,7 @@ defmodule AdventOfCode.DisplayTest do
              |> AdventOfCode.Display.decode_number("gbacfed")
   end
 
+  @tag :skip
   test "decode an easy number: 4" do
     %AdventOfCode.Note{patterns: patterns} =
       AdventOfCode.Note.parse(
@@ -107,6 +108,7 @@ defmodule AdventOfCode.DisplayTest do
              |> AdventOfCode.Display.to_decimal()
   end
 
+  @tag :skip
   test "partially decode 5" do
     %AdventOfCode.Note{patterns: patterns} =
       AdventOfCode.Note.parse(

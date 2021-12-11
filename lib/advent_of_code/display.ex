@@ -23,6 +23,7 @@ defmodule AdventOfCode.Display do
         Enum.member?([1, 4, 7, 8], number) and String.length(encoded) == String.length(mapping)
       end)
       |> then(fn mapping ->
+        # credo:disable-for-next-line
         cond do
           is_nil(mapping) ->
             known_patterns
@@ -37,20 +38,19 @@ defmodule AdventOfCode.Display do
 
   def create_decoder(known_patterns) do
     Map.keys(known_patterns)
-    |> Enum.sort_by(fn x -> String.length(x) end)
-    |> IO.inspect()
-    |> Enum.reduce(%{}, fn encoded, acc ->
+    |> Enum.reduce(%{}, fn encoded, decoder ->
       encoded_bits = String.split(encoded, "") |> Enum.filter(fn x -> x != "" end)
       decoded = Map.get(known_patterns, encoded)
       decoded_bits = String.split(decoded, "") |> Enum.filter(fn x -> x != "" end)
 
-      Enum.zip_reduce(encoded_bits, decoded_bits, acc, fn d, e, map ->
-        if Enum.member?(Map.keys(map), d) do
-          map
-        else
-          map = Map.put(map, d, e)
-          if d == "c", do: IO.inspect(map)
-          map
+      Enum.zip_reduce(encoded_bits, decoded_bits, decoder, fn encoded_bit, decoded_bit, map ->
+        # credo:disable-for-next-line
+        cond do
+          not Map.has_key?(decoder, encoded_bit) and encoded_bit != decoded_bit ->
+            Map.put(map, encoded_bit, decoded_bit)
+
+          true ->
+            decoder
         end
       end)
     end)
@@ -61,21 +61,20 @@ defmodule AdventOfCode.Display do
     |> String.split("")
     |> Enum.filter(fn x -> x != "" end)
     |> Enum.map(fn x ->
-      Map.get(decoder, x, "x")
+      Map.get(decoder, x, nil)
     end)
     |> Enum.sort()
     |> Enum.join()
   end
 
-  def to_decimal(decoded_segment) do
-    Enum.find(@mappings, fn {number, pattern} -> pattern == decoded_segment end)
-    |> then(fn {number, _} -> number end)
-  end
+  #  def to_decimal(decoded_segment) do
+  #    Enum.find(@mappings, fn {number, pattern} -> pattern == decoded_segment end)
+  #    |> then(fn {number, _} -> number end)
+  #  end
 
   def parse(input) do
     input
-    |> String.trim()
-    |> String.split("\n")
+    |> String.split("\n", trim: true)
     |> Enum.map(&Note.parse/1)
   end
 
