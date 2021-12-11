@@ -105,7 +105,8 @@ defmodule AdventOfCode.DisplayTest do
              |> AdventOfCode.Display.find_known_patterns()
              |> AdventOfCode.Display.create_decoder()
              |> AdventOfCode.Display.decode_number("eafb")
-#             |> AdventOfCode.Display.to_decimal()
+
+    #             |> AdventOfCode.Display.to_decimal()
   end
 
   @tag :skip
