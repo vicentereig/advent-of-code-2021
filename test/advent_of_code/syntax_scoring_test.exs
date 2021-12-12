@@ -101,7 +101,7 @@ defmodule AdventOfCode.SyntaxScoringTest do
     assert 26_397 ==
              lines
              |> SyntaxScoring.parse_lines()
-             |> Enum.filter(fn {error_type,_} -> error_type == :error end)
+             |> Enum.filter(fn {error_type, _} -> error_type == :error end)
              |> SyntaxScoring.calculate_contest_score()
   end
 
@@ -109,7 +109,7 @@ defmodule AdventOfCode.SyntaxScoringTest do
     assert 358_737 ==
              File.read!("data/day10/input.txt")
              |> SyntaxScoring.parse_lines()
-             |> Enum.filter(fn {error_type,_} -> error_type == :error end)
+             |> Enum.filter(fn {error_type, _} -> error_type == :error end)
              |> SyntaxScoring.calculate_contest_score()
   end
 
@@ -126,10 +126,38 @@ defmodule AdventOfCode.SyntaxScoringTest do
            ] ==
              lines |> SyntaxScoring.parse_lines()
 
+    assert [288_957] ==
+             lines
+             |> SyntaxScoring.parse_lines()
+             |> SyntaxScoring.autocomplete_score()
+  end
+
+  test "part 2 find winner" do
+    lines = """
+    [({(<(())[]>[[{[]{<()<>>
+    [(()[<>])]({[<{<<[]>>(
+    {([(<{}[<>[]}>{[]{[(<()>
+    (((({<>}<{<{<>}{[]{[]{}
+    [[<[([]))<([[{}[[()]]]
+    [{[{({}]{}}([{[{{{}}([]
+    {<[[]]>}<{[{[{[]{()[[[]
+    [<(<(<(<{}))><([]([]()
+    <{([([[(<>()){}]>(<<{{
+    <{([{{}}[<[[[<>{}]]]>[]]
+    """
+
     assert 288_957 ==
              lines
              |> SyntaxScoring.parse_lines()
-             |> IO.inspect
              |> SyntaxScoring.autocomplete_score()
+             |> SyntaxScoring.pick_winner()
+  end
+
+  test "part 2 solution" do
+    assert 4_329_504_793 ==
+             File.read!("data/day10/input.txt")
+             |> SyntaxScoring.parse_lines()
+             |> SyntaxScoring.autocomplete_score()
+             |> SyntaxScoring.pick_winner()
   end
 end

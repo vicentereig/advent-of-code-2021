@@ -80,16 +80,31 @@ defmodule AdventOfCode.SyntaxScoring do
 
   def autocomplete_score(errors) do
     errors
-    |> Enum.filter(fn {error_type,_} -> error_type == :incomplete end)
-    |> Enum.flat_map(fn {_, %{autocomplete: stack}} -> stack end)
+    |> Enum.filter(fn {error_type, _} -> error_type == :incomplete end)
+    |> Enum.map(fn {_, %{autocomplete: stack}} -> stack end)
+    |> Enum.map(&calculate_contest_score/1)
+  end
+
+  def calculate_autocomplete_scores(autocomplete) do
+    autocomplete
     |> Enum.reduce(0, fn autocompleted_token, total_score ->
-      char_score = case autocompleted_token do
-        ")" -> 1
-        "]" -> 2
-        "}" -> 3
-        ">" -> 4
-      end
+      char_score =
+        case autocompleted_token do
+          ")" -> 1
+          "]" -> 2
+          "}" -> 3
+          ">" -> 4
+        end
+
       total_score * 5 + char_score
+    end)
+  end
+
+  def pick_winner(scores) do
+    scores
+    |> Enum.sort()
+    |> then(fn scores ->
+      Enum.at(scores, 0 + div(length(scores), 2))
     end)
   end
 end
