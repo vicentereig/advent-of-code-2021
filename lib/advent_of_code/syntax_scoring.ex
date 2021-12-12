@@ -12,6 +12,9 @@ defmodule AdventOfCode.SyntaxScoring do
     "<" => ">"
   }
 
+  def evaluate_line("\n", {:ok, []}),
+    do: {:halt, {:ok}}
+
   def evaluate_line("\n", {:ok, stack}),
     do: {:cont, {:incomplete, %{autocomplete: autocomplete(stack)}}}
 
@@ -82,10 +85,10 @@ defmodule AdventOfCode.SyntaxScoring do
     errors
     |> Enum.filter(fn {error_type, _} -> error_type == :incomplete end)
     |> Enum.map(fn {_, %{autocomplete: stack}} -> stack end)
-    |> Enum.map(&calculate_contest_score/1)
+    |> Enum.map(&calculate_autocomplete_score/1)
   end
 
-  def calculate_autocomplete_scores(autocomplete) do
+  def calculate_autocomplete_score(autocomplete) do
     autocomplete
     |> Enum.reduce(0, fn autocompleted_token, total_score ->
       char_score =
