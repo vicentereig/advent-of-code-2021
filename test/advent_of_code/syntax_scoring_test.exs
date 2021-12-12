@@ -126,10 +126,10 @@ defmodule AdventOfCode.SyntaxScoringTest do
            ] ==
              lines |> SyntaxScoring.parse_lines()
 
-    assert 1337 ==
+    assert 288_957 ==
              lines
              |> SyntaxScoring.parse_lines()
-             |> Enum.filter(fn {error_type,_} -> error_type == :error end)
+             |> IO.inspect
              |> SyntaxScoring.autocomplete_score()
   end
 end

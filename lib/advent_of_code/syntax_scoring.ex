@@ -12,8 +12,6 @@ defmodule AdventOfCode.SyntaxScoring do
     "<" => ">"
   }
 
-  def evaluate_line("\n", {:ok, []}), do: {:halt, {:ok}}
-
   def evaluate_line("\n", {:ok, stack}),
     do: {:cont, {:incomplete, %{autocomplete: autocomplete(stack)}}}
 
@@ -25,7 +23,7 @@ defmodule AdventOfCode.SyntaxScoring do
   end
 
   def evaluate_line(found, {:ok, stack}) when found in @chunk_open_token do
-    {:cont, {:ok, [found] ++ stack}}
+    if found == "\n", do: {:halt, {:ok}}, else: {:cont, {:ok, [found] ++ stack}}
   end
 
   def evaluate_line(found, {:ok, []}) when found in @chunk_close_token do
@@ -83,5 +81,15 @@ defmodule AdventOfCode.SyntaxScoring do
   def autocomplete_score(errors) do
     errors
     |> Enum.filter(fn {error_type,_} -> error_type == :incomplete end)
+    |> Enum.flat_map(fn {_, %{autocomplete: stack}} -> stack end)
+    |> Enum.reduce(0, fn autocompleted_token, total_score ->
+      char_score = case autocompleted_token do
+        ")" -> 1
+        "]" -> 2
+        "}" -> 3
+        ">" -> 4
+      end
+      total_score * 5 + char_score
+    end)
   end
 end
