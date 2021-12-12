@@ -28,6 +28,7 @@ defmodule AdventOfCode.Octomap do
     map
     |> flash_niners
     |> propagate_energy
+
     #    flash_niners(map)
     #    |> propagate_energy
     #    recharge(map)
@@ -62,17 +63,20 @@ defmodule AdventOfCode.Octomap do
     |> Enum.map(fn row ->
       row
       |> Enum.map(fn %Octomap{x: x, y: y, energy: e} = octopus ->
-        IO.inspect([x,y], label: "(x,y)")
-        flashes = [
-          upper_flashed?(map, octopus),
-          lower_flashed?(map, octopus),
-          left_flashed?(map, octopus),
-          right_flashed?(map, octopus),
-          upper_left_flashed?(map, octopus),
-          upper_right_flashed?(map, octopus),
-          lower_left_flashed?(map, octopus),
-          lower_right_flashed?(map, octopus)
-        ] |> IO.inspect
+        IO.inspect([x, y], label: "(x,y)")
+
+        flashes =
+          [
+            upper_flashed?(map, octopus),
+            lower_flashed?(map, octopus),
+            left_flashed?(map, octopus),
+            right_flashed?(map, octopus),
+            upper_left_flashed?(map, octopus),
+            upper_right_flashed?(map, octopus),
+            lower_left_flashed?(map, octopus),
+            lower_right_flashed?(map, octopus)
+          ]
+          |> IO.inspect()
 
         irradiated_energy = flashes |> Enum.count(fn flashed -> flashed == true end)
         new_energy = e + irradiated_energy
@@ -99,18 +103,18 @@ defmodule AdventOfCode.Octomap do
   end
 
   def upper_left_flashed?(map, %Octomap{x: x, y: y}) do
-    if y-1 < 0, do: false, else: 0 == map |> Enum.at(y - 1) |> Enum.at(x - 1)
+    if y - 1 < 0, do: false, else: 0 == map |> Enum.at(y - 1) |> Enum.at(x - 1)
   end
 
   def upper_right_flashed?(map, %Octomap{x: x, y: y}) do
-    if y-1 < 0, do: false, else: 0 == map |> Enum.at(y - 1) |> Enum.at(x + 1)
+    if y - 1 < 0, do: false, else: 0 == map |> Enum.at(y - 1) |> Enum.at(x + 1)
   end
 
   def lower_left_flashed?(map, %Octomap{x: x, y: y}) do
-    if y+1 >= length(map), do: false, else: 0 == map |> Enum.at(y + 1) |> Enum.at(x - 1)
+    if y + 1 >= length(map), do: false, else: 0 == map |> Enum.at(y + 1) |> Enum.at(x - 1)
   end
 
   def lower_right_flashed?(map, %Octomap{x: x, y: y}) do
-    if y+1 >= length(map), do: false, else: 0 == map |> Enum.at(y + 1) |> Enum.at(x + 1)
+    if y + 1 >= length(map), do: false, else: 0 == map |> Enum.at(y + 1) |> Enum.at(x + 1)
   end
 end
