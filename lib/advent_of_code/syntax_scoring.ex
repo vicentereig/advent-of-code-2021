@@ -1,4 +1,7 @@
 defmodule AdventOfCode.SyntaxScoring do
+  @moduledoc """
+    Syntax Scoring Party
+  """
   @chunk_open_token ["(", "[", "{", "<"]
   @chunk_close_token [")", "]", "}", ">"]
 
@@ -19,17 +22,23 @@ defmodule AdventOfCode.SyntaxScoring do
   end
 
   def evaluate_line(found, {:ok, []}) when found in @chunk_close_token do
-    IO.inspect(found, label: "found")
     {:halt, {:error, %{expected: Map.get(@mapping, found), found: found}}}
   end
 
   def evaluate_line(found, {:ok, [expected_pair | tail]}) when found in @chunk_close_token do
-
     case [expected_pair, found] do
-      ["(", ")"] ->{:cont, {:ok, tail}}
-      ["{", "}"] ->{:cont, {:ok, tail}}
-      ["<", ">"] ->{:cont, {:ok, tail}}
-      ["[", "]"] ->{:cont, {:ok, tail}}
+      ["(", ")"] ->
+        {:cont, {:ok, tail}}
+
+      ["{", "}"] ->
+        {:cont, {:ok, tail}}
+
+      ["<", ">"] ->
+        {:cont, {:ok, tail}}
+
+      ["[", "]"] ->
+        {:cont, {:ok, tail}}
+
       _ ->
         {:halt, {:error, %{expected: Map.get(@mapping, expected_pair), found: found}}}
     end
@@ -53,13 +62,13 @@ defmodule AdventOfCode.SyntaxScoring do
     ")" => 3,
     "]" => 57,
     "}" => 1197,
-    ">" => 25137
+    ">" => 25_137
   }
   def calculate_contest_score(errors) do
     errors
     |> Enum.map(fn {:error, %{found: found}} -> found end)
-    |> Enum.map(fn found ->  Map.get(@scores, found) end)
+    |> Enum.map(fn found -> Map.get(@scores, found) end)
     |> Enum.filter(fn score -> not is_nil(score) end)
-    |> Enum.sum
+    |> Enum.sum()
   end
 end

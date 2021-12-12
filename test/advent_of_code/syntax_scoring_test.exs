@@ -74,8 +74,8 @@ defmodule AdventOfCode.SyntaxScoringTest do
     [(()[<>])]({[<{<<[]>>(
     """
 
-    assert [ {:error, %{expected: "}", found: "{"}},
-             {:error, %{expected: ")", found: "("}}] == lines |> SyntaxScoring.parse_lines
+    assert [{:error, %{expected: "}", found: "{"}}, {:error, %{expected: ")", found: "("}}] ==
+             lines |> SyntaxScoring.parse_lines()
   end
 
   test "solve example" do
@@ -92,14 +92,16 @@ defmodule AdventOfCode.SyntaxScoringTest do
     <{([{{}}[<[[[<>{}]]]>[]]
     """
 
-    assert 26397 == lines
-                    |> SyntaxScoring.parse_lines
-                    |> SyntaxScoring.calculate_contest_score
+    assert 26_397 ==
+             lines
+             |> SyntaxScoring.parse_lines()
+             |> SyntaxScoring.calculate_contest_score()
   end
 
   test "solve day10 part1" do
-    assert 358737 == File.read!("data/day10/input.txt")
-    |> SyntaxScoring.parse_lines
-    |> SyntaxScoring.calculate_contest_score
+    assert 358_737 ==
+             File.read!("data/day10/input.txt")
+             |> SyntaxScoring.parse_lines()
+             |> SyntaxScoring.calculate_contest_score()
   end
 end
