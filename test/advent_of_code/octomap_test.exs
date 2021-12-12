@@ -43,5 +43,6 @@ defmodule AdventOfCode.OctomapTest do
              input
              |> Octomap.create_octomap()
              |> Octomap.next_octomap()
+             |> Octomap.map(fn %Octomap{energy: e} -> e end)
   end
 end
