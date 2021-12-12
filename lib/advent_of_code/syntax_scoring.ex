@@ -12,12 +12,6 @@ defmodule AdventOfCode.SyntaxScoring do
     "<" => ">"
   }
 
-  def evaluate_line("\n", {:ok, []}),
-    do: {:halt, {:ok}}
-
-  def evaluate_line("\n", {:ok, stack}),
-    do: {:cont, {:incomplete, %{autocomplete: autocomplete(stack)}}}
-
   # (), ], }, or >)
   # simple autocomplete
   def autocomplete(stack) do
@@ -27,6 +21,13 @@ defmodule AdventOfCode.SyntaxScoring do
 
   def evaluate_line(found, {:ok, stack}) when found in @chunk_open_token do
     if found == "\n", do: {:halt, {:ok}}, else: {:cont, {:ok, [found] ++ stack}}
+  end
+
+  def evaluate_line("\n", {:ok, stack}) do
+    cond do
+      length(stack) > 0 -> {:cont, {:incomplete, %{autocomplete: autocomplete(stack)}}}
+      true -> {:halt, {:ok}}
+    end
   end
 
   def evaluate_line(found, {:ok, []}) when found in @chunk_close_token do
