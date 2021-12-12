@@ -9,7 +9,7 @@ defmodule AdventOfCode.SyntaxScoringTest do
   end
 
   test "detects an invalid line in ((" do
-    assert {:error, %{expected: ")", found: "("}} ==
+    assert {:incomplete, %{autocomplete: [")", ")", ")"]}} ==
              "(((\n"
              |> SyntaxScoring.parse_line()
   end
@@ -70,11 +70,17 @@ defmodule AdventOfCode.SyntaxScoringTest do
 
   test "parse lines" do
     lines = """
-    [({(<(())[]>[[{[]{<()<>>
-    [(()[<>])]({[<{<<[]>>(
+    {([(<{}[<>[]}>{[]{[(<()>
+    [[<[([]))<([[{}[[()]]]
     """
 
-    assert [{:error, %{expected: "}", found: "{"}}, {:error, %{expected: ")", found: "("}}] ==
+    assert [
+             {:error, %{expected: "]", found: "}"}},
+             {
+               :error,
+               %{expected: "]", found: ")"}
+             }
+           ] ==
              lines |> SyntaxScoring.parse_lines()
   end
 
@@ -95,6 +101,7 @@ defmodule AdventOfCode.SyntaxScoringTest do
     assert 26_397 ==
              lines
              |> SyntaxScoring.parse_lines()
+             |> Enum.filter(fn {error_type,_} -> error_type == :error end)
              |> SyntaxScoring.calculate_contest_score()
   end
 
@@ -102,6 +109,27 @@ defmodule AdventOfCode.SyntaxScoringTest do
     assert 358_737 ==
              File.read!("data/day10/input.txt")
              |> SyntaxScoring.parse_lines()
+             |> Enum.filter(fn {error_type,_} -> error_type == :error end)
              |> SyntaxScoring.calculate_contest_score()
+  end
+
+  test "part 2" do
+    lines = """
+    [({(<(())[]>[[{[]{<()<>>
+    """
+
+    assert [
+             {
+               :incomplete,
+               %{autocomplete: ["}", "}", "]", "]", ")", "}", ")", "]"]}
+             }
+           ] ==
+             lines |> SyntaxScoring.parse_lines()
+
+    assert 1337 ==
+             lines
+             |> SyntaxScoring.parse_lines()
+             |> Enum.filter(fn {error_type,_} -> error_type == :error end)
+             |> SyntaxScoring.autocomplete_score()
   end
 end
