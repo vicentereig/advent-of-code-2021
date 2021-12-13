@@ -72,7 +72,7 @@ defmodule AdventOfCode.Octomap do
         |> did_they_flash?(octopus)
         |> Enum.count(fn neighbour_flashed -> neighbour_flashed == true end)
 
-      %{octopus | energy: e + absorbed_energy}
+      %{octopus | flashed: false, energy: e + absorbed_energy}
     end)
   end
 

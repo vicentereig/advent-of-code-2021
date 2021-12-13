@@ -38,6 +38,21 @@ defmodule AdventOfCode.OctomapTest do
                              |> Octomap.map(&Octomap.to_energy/1)
   end
 
+  test "simple recharge, flash, propagate, flash and propagate" do
+    input = """
+    34
+    49
+    """
+    assert [[5,6], [6,0]] == input
+                             |> Octomap.create_octomap()
+                             |> Octomap.recharge()
+                             |> Octomap.flash()
+                             |> Octomap.propagate_energy()
+                             |> Octomap.flash()
+                             |> Octomap.propagate_energy()
+                             |> Octomap.map(&Octomap.to_energy/1)
+  end
+
   test "simple pulsing octopi: 2 steps" do
     input = """
         11111
