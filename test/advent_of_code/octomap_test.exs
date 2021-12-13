@@ -2,6 +2,26 @@ defmodule AdventOfCode.OctomapTest do
   use ExUnit.Case
   alias AdventOfCode.Octomap
 
+  test "part 1 example" do
+    input = """
+    5483143223
+    2745854711
+    5264556173
+    6141336146
+    6357385478
+    4167524645
+    2176841721
+    6882881134
+    4846848554
+    5283751526
+    """
+
+    assert 204 ==
+             input
+             |> Octomap.create_octomap()
+             |> Octomap.count_flashes_over_steps(10)
+  end
+
   test "simple recharge" do
     input = """
     34
@@ -246,21 +266,21 @@ defmodule AdventOfCode.OctomapTest do
   end
 
   test "propagate bis" do
-
     assert [
              [3, 4, 5, 4, 3],
              [4, 0, 0, 0, 4],
              [5, 0, 10, 0, 5],
              [4, 0, 0, 0, 4],
              [3, 4, 5, 4, 3]
-           ]  ==
+           ] ==
              [
                [2, 2, 2, 2, 2],
                [2, 0, 0, 0, 2],
                [2, 0, 2, 0, 2],
                [2, 0, 0, 0, 2],
                [2, 2, 2, 2, 2]
-             ] |> Octomap.to_map()
+             ]
+             |> Octomap.to_map()
              |> Octomap.map(fn %Octomap{energy: e, flashed: f} = o ->
                if e == 0, do: %{o | flashed: !f}, else: o
              end)

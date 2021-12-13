@@ -14,6 +14,31 @@ defmodule AdventOfCode.Octomap do
     |> to_map
   end
 
+  def count_flashes_over_steps(initial_map, step_count) do
+    initial_map |> Octomap.map(&to_energy/1) |> IO.inspect()
+
+    1..step_count
+    |> Enum.map_reduce(initial_map, fn step, map ->
+      next = map |> next_octomap
+      next |> Octomap.map(&to_energy/1) |> IO.inspect(label: "Step #{step}")
+
+      flash_count =
+        next
+        |> Octomap.count(fn %Octomap{energy: e} -> e == 0 end)
+        |> IO.inspect(label: "Step #{step}")
+
+      {flash_count, next}
+    end)
+    |> then(fn {flash_counts, _} -> flash_counts end)
+    |> Enum.sum()
+  end
+
+  def count(map, f) do
+    map
+    |> Enum.map(fn row -> row |> Enum.count(fn octopus -> f.(octopus) end) end)
+    |> Enum.sum()
+  end
+
   def to_map(energy_map) do
     energy_map
     |> Enum.with_index()
@@ -26,16 +51,25 @@ defmodule AdventOfCode.Octomap do
     end)
   end
 
-  # recharge all
-  # flash all 9s, propagate to non-zeros
-  # flash new 9s, propagate to non-zeros
-  def next_octomap(map) do
-    map
-    |> recharge
-    |> flash
-    |> propagate_energy
-    |> flash
-    |> propagate_energy
+  def next_octomap(initial_map) do
+    Stream.unfold(initial_map, fn
+      map ->
+        next_map = map
+        |> recharge
+        |> flash
+        |> propagate_energy
+
+        octopi_to_go = next_map |> count(fn %Octomap{energy: e} -> e > 9 end)
+
+        IO.puts("  reducing flashed=#{octopi_to_go}")
+        IO.inspect(next_map)
+        cond do
+          octopi_to_go > 0 -> next_map
+
+          true ->
+            nil
+        end
+    end)
   end
 
   def recharge(map) do
@@ -49,11 +83,12 @@ defmodule AdventOfCode.Octomap do
     map |> Enum.map(fn row -> row |> Enum.map(fn octopus -> f.(octopus) end) end)
   end
 
+  # an octopus can only flash once per step
   def flash(map) do
     map
     |> Octomap.map(fn %Octomap{x: x, y: y, energy: e, flashed: flashed} = octopus ->
-      if e >= 9 do
-        %Octomap{x: x, y: y, energy: 0, flashed: !flashed}
+      if e > 9 and not flashed do
+        %Octomap{x: x, y: y, energy: 0, flashed: true}
       else
         octopus
       end
