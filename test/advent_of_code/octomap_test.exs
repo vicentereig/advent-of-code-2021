@@ -7,10 +7,12 @@ defmodule AdventOfCode.OctomapTest do
     34
     49
     """
-    assert [[4,5], [5,10]] == input
-           |> Octomap.create_octomap()
-           |> Octomap.recharge()
-           |> Octomap.map(&Octomap.to_energy/1)
+
+    assert [[4, 5], [5, 10]] ==
+             input
+             |> Octomap.create_octomap()
+             |> Octomap.recharge()
+             |> Octomap.map(&Octomap.to_energy/1)
   end
 
   test "simple recharge and flash" do
@@ -18,11 +20,13 @@ defmodule AdventOfCode.OctomapTest do
     34
     49
     """
-    assert [[4,5], [5,0]] == input
-                             |> Octomap.create_octomap()
-                             |> Octomap.recharge()
-                             |> Octomap.flash()
-                             |> Octomap.map(&Octomap.to_energy/1)
+
+    assert [[4, 5], [5, 0]] ==
+             input
+             |> Octomap.create_octomap()
+             |> Octomap.recharge()
+             |> Octomap.flash()
+             |> Octomap.map(&Octomap.to_energy/1)
   end
 
   test "simple recharge, flash, and propagate" do
@@ -30,12 +34,14 @@ defmodule AdventOfCode.OctomapTest do
     34
     49
     """
-    assert [[5,6], [6,0]] == input
-                             |> Octomap.create_octomap()
-                             |> Octomap.recharge()
-                             |> Octomap.flash()
-                             |> Octomap.propagate_energy()
-                             |> Octomap.map(&Octomap.to_energy/1)
+
+    assert [[5, 6], [6, 0]] ==
+             input
+             |> Octomap.create_octomap()
+             |> Octomap.recharge()
+             |> Octomap.flash()
+             |> Octomap.propagate_energy()
+             |> Octomap.map(&Octomap.to_energy/1)
   end
 
   test "simple recharge, flash, propagate, flash and propagate" do
@@ -43,14 +49,38 @@ defmodule AdventOfCode.OctomapTest do
     34
     49
     """
-    assert [[5,6], [6,0]] == input
-                             |> Octomap.create_octomap()
-                             |> Octomap.recharge()
-                             |> Octomap.flash()
-                             |> Octomap.propagate_energy()
-                             |> Octomap.flash()
-                             |> Octomap.propagate_energy()
-                             |> Octomap.map(&Octomap.to_energy/1)
+
+    assert [[5, 6], [6, 0]] ==
+             input
+             |> Octomap.create_octomap()
+             |> Octomap.recharge()
+             |> Octomap.flash()
+             |> Octomap.propagate_energy()
+             |> Octomap.flash()
+             |> Octomap.propagate_energy()
+             |> Octomap.map(&Octomap.to_energy/1)
+  end
+
+  test "simple pulsing octopi: 1 steps" do
+    input = """
+        11111
+        19991
+        19191
+        19991
+        11111
+    """
+
+    assert [
+             [3, 4, 5, 4, 3],
+             [4, 0, 0, 0, 4],
+             [5, 0, 0, 0, 5],
+             [4, 0, 0, 0, 4],
+             [3, 4, 5, 4, 3]
+           ] ==
+             input
+             |> Octomap.create_octomap()
+             |> Octomap.next_octomap()
+             |> Octomap.map(fn %Octomap{energy: e} -> e end)
   end
 
   test "simple pulsing octopi: 2 steps" do
@@ -133,10 +163,10 @@ defmodule AdventOfCode.OctomapTest do
                [4, 0, 0, 0, 4],
                [3, 4, 5, 4, 3]
              ]
-             |> Octomap.to_map()|> Octomap.map(fn %Octomap{energy: e, flashed: f} = o ->
+             |> Octomap.to_map()
+             |> Octomap.map(fn %Octomap{energy: e, flashed: f} = o ->
                if e == 0, do: %{o | flashed: !f}, else: o
              end)
-
              |> Octomap.lower_right_flashed?(%Octomap{x: 4, y: 4})
   end
 
@@ -167,7 +197,7 @@ defmodule AdventOfCode.OctomapTest do
              ]
              |> Octomap.to_map()
              |> Octomap.map(fn %Octomap{energy: e, flashed: f} = o ->
-              if e == 0, do: %{o | flashed: !f}, else: o
+               if e == 0, do: %{o | flashed: !f}, else: o
              end)
              |> Octomap.upper_left_flashed?(%Octomap{x: 4, y: 5})
   end
@@ -186,28 +216,6 @@ defmodule AdventOfCode.OctomapTest do
                if e == 0, do: %{o | flashed: !f}, else: o
              end)
              |> Octomap.did_they_flash?(%Octomap{x: 2, y: 2})
-  end
-
-  test "simple pulsing octopi: 1 steps" do
-    input = """
-        11111
-        19991
-        19191
-        19991
-        11111
-    """
-
-    assert [
-             [2, 3, 4, 3, 2],
-             [3, 2, 4, 2, 3],
-             [4, 4, 9, 4, 4],
-             [3, 2, 4, 2, 3],
-             [2, 3, 4, 3, 2]
-           ] ==
-             input
-             |> Octomap.create_octomap()
-             |> Octomap.next_octomap()
-             |> Octomap.map(fn %Octomap{energy: e} -> e end)
   end
 
   test "neighbour did flash" do
@@ -230,6 +238,29 @@ defmodule AdventOfCode.OctomapTest do
                [4, 0]
              ]
              |> Octomap.to_map()
+             |> Octomap.map(fn %Octomap{energy: e, flashed: f} = o ->
+               if e == 0, do: %{o | flashed: !f}, else: o
+             end)
+             |> Octomap.propagate_energy()
+             |> Octomap.map(&Octomap.to_energy/1)
+  end
+
+  test "propagate bis" do
+
+    assert [
+             [3, 4, 5, 4, 3],
+             [4, 0, 0, 0, 4],
+             [5, 0, 10, 0, 5],
+             [4, 0, 0, 0, 4],
+             [3, 4, 5, 4, 3]
+           ]  ==
+             [
+               [2, 2, 2, 2, 2],
+               [2, 0, 0, 0, 2],
+               [2, 0, 2, 0, 2],
+               [2, 0, 0, 0, 2],
+               [2, 2, 2, 2, 2]
+             ] |> Octomap.to_map()
              |> Octomap.map(fn %Octomap{energy: e, flashed: f} = o ->
                if e == 0, do: %{o | flashed: !f}, else: o
              end)
