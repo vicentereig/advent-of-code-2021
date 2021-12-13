@@ -100,7 +100,18 @@ defmodule AdventOfCode.OctomapTest do
              input
              |> Octomap.create_octomap()
              |> Octomap.next_octomap()
-             |> Octomap.map(fn %Octomap{energy: e} -> e end)
+             |> Enum.at(0)
+             |> Octomap.map(&Octomap.to_energy/1)
+  end
+
+  test "what is the opposite of Enum.reduce? Unfold." do
+    assert 10 ==
+             %{result: 0}
+             |> Stream.unfold(fn
+               %{result: 22} -> nil
+               %{result: prev_result} = state -> {prev_result, %{state | result: prev_result + 1}}
+             end)
+             |> Enum.at(10)
   end
 
   test "simple pulsing octopi: 2 steps" do

@@ -52,23 +52,24 @@ defmodule AdventOfCode.Octomap do
   end
 
   def next_octomap(initial_map) do
-    Stream.unfold(initial_map, fn
-      map ->
-        next_map = map
-        |> recharge
-        |> flash
-        |> propagate_energy
+    Stream.unfold(%{octopi_to_flash: -1, map: initial_map}, fn
+      %{octopi_to_flash: 0} = state ->
+        state
+        |> IO.inspect(label: "Fin")
+        nil
+      %{octopi_to_flash: n, map: map} = next_state ->
+        IO.inspect(n, label: "prev octopi")
 
-        octopi_to_go = next_map |> count(fn %Octomap{energy: e} -> e > 9 end)
-
-        IO.puts("  reducing flashed=#{octopi_to_go}")
+        next_map =
+          map
+          |> recharge
+          |> flash
+          |> propagate_energy
         IO.inspect(next_map)
-        cond do
-          octopi_to_go > 0 -> next_map
+        octopi_to_flash = next_map |> count(fn %Octomap{energy: e} -> e > 9 end)
+        IO.inspect(octopi_to_flash, label: "next octopi")
 
-          true ->
-            nil
-        end
+        { next_map, %{octopi_to_flash: octopi_to_flash, map: next_map} }
     end)
   end
 
@@ -80,7 +81,11 @@ defmodule AdventOfCode.Octomap do
   end
 
   def map(map, f) do
-    map |> Enum.map(fn row -> row |> Enum.map(fn octopus -> f.(octopus) end) end)
+    map
+
+    |> Enum.map(fn row -> row
+                          |> Enum.map(fn octopus -> f.(octopus) end)
+    end)
   end
 
   # an octopus can only flash once per step
