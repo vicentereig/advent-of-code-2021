@@ -24,9 +24,9 @@ defmodule AdventOfCode.SyntaxScoring do
   end
 
   def evaluate_line("\n", {:ok, stack}) do
-    cond do
-      length(stack) > 0 -> {:cont, {:incomplete, %{autocomplete: autocomplete(stack)}}}
-      true -> {:halt, {:ok}}
+    case length(stack) do
+      0 -> {:cont, {:incomplete, %{autocomplete: autocomplete(stack)}}}
+      n -> {:halt, {:ok}}
     end
   end
 

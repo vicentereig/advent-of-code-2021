@@ -1,4 +1,7 @@
 defmodule AdventOfCode.Octomap do
+  @moduledoc """
+    Octomap Day 11 - unfinished
+  """
   defstruct x: 0, y: 0, energy: 0, just_flashed: false, flashed: false
   alias AdventOfCode.Octomap
 
@@ -15,17 +18,18 @@ defmodule AdventOfCode.Octomap do
   end
 
   def count_flashes_over_steps(initial_map, step_count) do
-    initial_map |> Octomap.map(&to_energy/1) |> IO.inspect()
+    #    initial_map |> Octomap.map(&to_energy/1) |> IO.inspect()
 
     1..step_count
     |> Enum.map_reduce(initial_map, fn step, map ->
-      next = map |> next_octomap |> Enum.to_list() |> then(fn [map] -> map end)
-      next |> Octomap.map(&to_energy/1) |> IO.inspect(label: "Step #{step}")
+      next = map |> next_octomap |> Enum.at(0)
+      #      next |> Octomap.map(&to_energy/1) |> IO.inspect(label: "Step #{step}")
 
       flash_count =
         next
         |> Octomap.count(fn %Octomap{energy: e} -> e == 0 end)
-        |> IO.inspect(label: "Step #{step}")
+
+      #        |> IO.inspect(label: "Step ##{step} zeros")
 
       {flash_count, next}
     end)
@@ -67,18 +71,25 @@ defmodule AdventOfCode.Octomap do
     initial_map
     |> recharge
     |> Stream.unfold(fn
-      [] ->
+      :done ->
         nil
 
       map ->
-        next_map = map |> flash |> propagate_energy
+        next_map =
+          map
+          |> flash
+          |> propagate_energy
 
         flash_count =
-          map |> count(fn %Octomap{just_flashed: did_flash} -> did_flash end) |> IO.inspect()
+          map
+          |> count(fn %Octomap{just_flashed: did_flash, energy: e} -> !did_flash and e > 9 end)
+
+        #          |> IO.inspect(label: "just_flashed")
+
         next_map = next_map |> mark_flashed
 
         case flash_count do
-          0 -> {next_map |> flash |> propagate_energy |> reset_flashes, []}
+          0 -> {next_map |> flash |> propagate_energy |> reset_flashes, :done}
           n -> {next_map, next_map}
         end
     end)
@@ -113,8 +124,8 @@ defmodule AdventOfCode.Octomap do
 
   def propagate_energy(map) do
     map
-    |> Octomap.map(fn %Octomap{energy: e} = octopus ->
-      if e == 0 do
+    |> Octomap.map(fn %Octomap{just_flashed: just_flashed, energy: e} = octopus ->
+      if just_flashed do
         octopus
       else
         absorbed_energy =
@@ -157,7 +168,7 @@ defmodule AdventOfCode.Octomap do
   end
 
   def right_flashed?(map, %Octomap{x: x, y: y}) do
-    if x > length(map), do: false, else: map |> Enum.at(x) |> Enum.at(y + 1) |> to_flashed
+    if x >= length(map), do: false, else: map |> Enum.at(x) |> Enum.at(y + 1) |> to_flashed
   end
 
   def upper_left_flashed?(map, %Octomap{x: x, y: y}) do

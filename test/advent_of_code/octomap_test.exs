@@ -138,10 +138,8 @@ defmodule AdventOfCode.OctomapTest do
              input
              |> Octomap.create_octomap()
              |> Octomap.next_octomap()
-             |> Enum.to_list()
-             |> then(fn [map] ->
-               map |> Octomap.map(&Octomap.to_energy/1)
-             end)
+             |> Enum.at(0)
+             |> Octomap.map(&Octomap.to_energy/1)
   end
 
   test "upper octopus did not flash" do
@@ -154,8 +152,8 @@ defmodule AdventOfCode.OctomapTest do
                [3, 4, 5, 4, 3]
              ]
              |> Octomap.to_map()
-             |> Octomap.map(fn %Octomap{energy: e, flashed: f} = o ->
-               if e == 0, do: %{o | flashed: !f}, else: o
+             |> Octomap.map(fn %Octomap{energy: e, just_flashed: f} = o ->
+               if e == 0, do: %{o | just_flashed: !f}, else: o
              end)
              |> Octomap.upper_flashed?(%Octomap{x: 4, y: 4})
   end
@@ -170,8 +168,8 @@ defmodule AdventOfCode.OctomapTest do
                [3, 4, 5, 4, 3]
              ]
              |> Octomap.to_map()
-             |> Octomap.map(fn %Octomap{energy: e, flashed: f} = o ->
-               if e == 0, do: %{o | flashed: !f}, else: o
+             |> Octomap.map(fn %Octomap{energy: e, just_flashed: f} = o ->
+               if e == 0, do: %{o | just_flashed: !f}, else: o
              end)
              |> Octomap.upper_flashed?(%Octomap{x: 0, y: 1})
   end
@@ -186,8 +184,8 @@ defmodule AdventOfCode.OctomapTest do
                [3, 4, 5, 4, 3]
              ]
              |> Octomap.to_map()
-             |> Octomap.map(fn %Octomap{energy: e, flashed: f} = o ->
-               if e == 0, do: %{o | flashed: !f}, else: o
+             |> Octomap.map(fn %Octomap{energy: e, just_flashed: f} = o ->
+               if e == 0, do: %{o | just_flashed: !f}, else: o
              end)
              |> Octomap.upper_left_flashed?(%Octomap{x: 4, y: 4})
   end
@@ -202,8 +200,8 @@ defmodule AdventOfCode.OctomapTest do
                [3, 4, 5, 4, 3]
              ]
              |> Octomap.to_map()
-             |> Octomap.map(fn %Octomap{energy: e, flashed: f} = o ->
-               if e == 0, do: %{o | flashed: !f}, else: o
+             |> Octomap.map(fn %Octomap{energy: e, just_flashed: f} = o ->
+               if e == 0, do: %{o | just_flashed: !f}, else: o
              end)
              |> Octomap.lower_right_flashed?(%Octomap{x: 4, y: 4})
   end
@@ -218,8 +216,8 @@ defmodule AdventOfCode.OctomapTest do
                [3, 4, 5, 4, 3]
              ]
              |> Octomap.to_map()
-             |> Octomap.map(fn %Octomap{energy: e, flashed: f} = o ->
-               if e == 0, do: %{o | flashed: !f}, else: o
+             |> Octomap.map(fn %Octomap{energy: e, just_flashed: f} = o ->
+               if e == 0, do: %{o | just_flashed: !f}, else: o
              end)
              |> Octomap.lower_right_flashed?(%Octomap{x: 2, y: 2})
   end
@@ -234,8 +232,8 @@ defmodule AdventOfCode.OctomapTest do
                [3, 4, 5, 4, 3]
              ]
              |> Octomap.to_map()
-             |> Octomap.map(fn %Octomap{energy: e, flashed: f} = o ->
-               if e == 0, do: %{o | flashed: !f}, else: o
+             |> Octomap.map(fn %Octomap{energy: e, just_flashed: f} = o ->
+               if e == 0, do: %{o | just_flashed: !f}, else: o
              end)
              |> Octomap.upper_left_flashed?(%Octomap{x: 4, y: 5})
   end
@@ -250,8 +248,8 @@ defmodule AdventOfCode.OctomapTest do
                [4, 5, 6, 5, 4]
              ]
              |> Octomap.to_map()
-             |> Octomap.map(fn %Octomap{energy: e, flashed: f} = o ->
-               if e == 0, do: %{o | flashed: !f}, else: o
+             |> Octomap.map(fn %Octomap{energy: e, just_flashed: f} = o ->
+               if e == 0, do: %{o | just_flashed: !f}, else: o
              end)
              |> Octomap.did_they_flash?(%Octomap{x: 2, y: 2})
   end
@@ -263,8 +261,8 @@ defmodule AdventOfCode.OctomapTest do
                [4, 0]
              ]
              |> Octomap.to_map()
-             |> Octomap.map(fn %Octomap{energy: e, flashed: f} = o ->
-               if e == 0, do: %{o | flashed: !f}, else: o
+             |> Octomap.map(fn %Octomap{energy: e, just_flashed: f} = o ->
+               if e == 0, do: %{o | just_flashed: !f}, else: o
              end)
              |> Octomap.did_they_flash?(%Octomap{x: 0, y: 0})
   end
@@ -276,8 +274,8 @@ defmodule AdventOfCode.OctomapTest do
                [4, 0]
              ]
              |> Octomap.to_map()
-             |> Octomap.map(fn %Octomap{energy: e, flashed: f} = o ->
-               if e == 0, do: %{o | flashed: !f}, else: o
+             |> Octomap.map(fn %Octomap{energy: e, just_flashed: f} = o ->
+               if e == 0, do: %{o | just_flashed: !f}, else: o
              end)
              |> Octomap.propagate_energy()
              |> Octomap.map(&Octomap.to_energy/1)
@@ -299,8 +297,8 @@ defmodule AdventOfCode.OctomapTest do
                [2, 2, 2, 2, 2]
              ]
              |> Octomap.to_map()
-             |> Octomap.map(fn %Octomap{energy: e, flashed: f} = o ->
-               if e == 0, do: %{o | flashed: !f}, else: o
+             |> Octomap.map(fn %Octomap{energy: e, just_flashed: f} = o ->
+               if e == 0, do: %{o | just_flashed: !f}, else: o
              end)
              |> Octomap.propagate_energy()
              |> Octomap.map(&Octomap.to_energy/1)
