@@ -52,24 +52,47 @@ defmodule AdventOfCode.Octomap do
   end
 
   def next_octomap(initial_map) do
-    Stream.unfold(%{octopi_to_flash: -1, map: initial_map}, fn
-      %{octopi_to_flash: 0} = state ->
-        state
-        |> IO.inspect(label: "Fin")
-        nil
-      %{octopi_to_flash: n, map: map} = next_state ->
-        IO.inspect(n, label: "prev octopi")
+    Stream.resource(
+    fn -> initial_map end, # start_fun
+    fn prev_map -> #next_fun
+      map = prev_map
+      |> recharge
+      |> flash
+      |> propagate_energy
 
+      case map |> count(fn %Octomap{energy: e} -> e > 9 end) do
+        0 -> {:halt, map }
+        n -> {map, map}
+      end
+    end,
+    fn _map -> # after
+
+    end
+    )
+  end
+
+  def _next_octomap(initial_map) do
+    initial_map
+    |> Stream.unfold(fn
+      [] -> nil
+      map ->
+        octopi_to_flash = map |> count(fn %Octomap{energy: e} -> e > 9 end)
         next_map =
           map
           |> recharge
           |> flash
           |> propagate_energy
-        IO.inspect(next_map)
-        octopi_to_flash = next_map |> count(fn %Octomap{energy: e} -> e > 9 end)
-        IO.inspect(octopi_to_flash, label: "next octopi")
 
-        { next_map, %{octopi_to_flash: octopi_to_flash, map: next_map} }
+        next_octopi_to_flash = next_map |> count(fn %Octomap{energy: e} -> e > 9 end)
+
+        IO.inspect(next_map |> Octomap.map(&Octomap.to_energy/1) , label: "next_map")
+        IO.inspect(next_octopi_to_flash, label: "next octopi")
+
+        {next_map, cond do
+          next_octopi_to_flash > 0 -> next_map
+          true -> []
+        end
+        }
     end)
   end
 
@@ -82,7 +105,6 @@ defmodule AdventOfCode.Octomap do
 
   def map(map, f) do
     map
-
     |> Enum.map(fn row -> row
                           |> Enum.map(fn octopus -> f.(octopus) end)
     end)
