@@ -139,10 +139,6 @@ defmodule AdventOfCode.OctomapTest do
              |> Octomap.create_octomap()
              |> Octomap.next_octomap()
              |> Enum.to_list()
-             |> then(fn [map] -> map end)
-             |> IO.inspect()
-             |> Octomap.next_octomap()
-             |> Enum.to_list()
              |> then(fn [map] ->
                map |> Octomap.map(&Octomap.to_energy/1)
              end)

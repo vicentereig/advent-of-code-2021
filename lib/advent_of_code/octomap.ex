@@ -1,5 +1,5 @@
 defmodule AdventOfCode.Octomap do
-  defstruct x: 0, y: 0, energy: 0, flashed: false
+  defstruct x: 0, y: 0, energy: 0, just_flashed: false, flashed: false
   alias AdventOfCode.Octomap
 
   def create_octomap(input) do
@@ -19,7 +19,7 @@ defmodule AdventOfCode.Octomap do
 
     1..step_count
     |> Enum.map_reduce(initial_map, fn step, map ->
-      next = map |> next_octomap |> Enum.to_list |> then(fn [map] -> map end)
+      next = map |> next_octomap |> Enum.to_list() |> then(fn [map] -> map end)
       next |> Octomap.map(&to_energy/1) |> IO.inspect(label: "Step #{step}")
 
       flash_count =
@@ -51,43 +51,16 @@ defmodule AdventOfCode.Octomap do
     end)
   end
 
-  def _next_octomap(initial_map) do
-    Stream.resource(
-      fn ->
-        map =
-          initial_map
-          |> recharge
-
-        map |> count(fn %Octomap{energy: e} -> e > 9 end) |> IO.inspect(label: "start_count")
-        map
-      end,
-
-      # start_fun
-      # next_fun
-      fn prev_map ->
-        map =
-          prev_map
-          |> flash
-          |> propagate_energy
-
-        map |> Octomap.map(&Octomap.to_energy/1) |> IO.inspect()
-        next_map = map |> mark_flashed
-
-        case map
-             |> count(fn %Octomap{flashed: did_flash} -> did_flash end)
-             |> IO.inspect(label: "next_count") do
-          0 -> {:halt, nil}
-          n -> {next_map, next_map}
-        end
-      end,
-      # after_fun
-      fn _ -> {} end
-    )
-  end
-
   def mark_flashed(map) do
     map
-    |> Octomap.map(fn octopus -> %{octopus | flashed: false} end)
+    |> Octomap.map(fn %Octomap{just_flashed: just_flashed} = octopus ->
+      %{octopus | just_flashed: false, flashed: just_flashed}
+    end)
+  end
+
+  def reset_flashes(map) do
+    map
+    |> Octomap.map(fn octopus -> %{octopus | just_flashed: false, flashed: false} end)
   end
 
   def next_octomap(initial_map) do
@@ -99,19 +72,22 @@ defmodule AdventOfCode.Octomap do
 
       map ->
         next_map = map |> flash |> propagate_energy
-        map |> count(fn %Octomap{flashed: did_flash} -> did_flash end) |> IO.inspect()
 
-        case map |> count(fn %Octomap{flashed: did_flash} -> did_flash end) do
-          0 -> {next_map |> flash |> mark_flashed, []}
-          n -> {next_map |> mark_flashed, next_map |> mark_flashed}
+        flash_count =
+          map |> count(fn %Octomap{just_flashed: did_flash} -> did_flash end) |> IO.inspect()
+        next_map = next_map |> mark_flashed
+
+        case flash_count do
+          0 -> {next_map |> flash |> propagate_energy |> reset_flashes, []}
+          n -> {next_map, next_map}
         end
     end)
   end
 
   def recharge(map) do
     map
-    |> Octomap.map(fn %Octomap{x: x, y: y, energy: e, flashed: f} ->
-      %Octomap{x: x, y: y, energy: e + 1, flashed: f}
+    |> Octomap.map(fn %Octomap{energy: e} = octopus ->
+      %{octopus | energy: e + 1}
     end)
   end
 
@@ -126,9 +102,9 @@ defmodule AdventOfCode.Octomap do
   # an octopus can only flash once per step
   def flash(map) do
     map
-    |> Octomap.map(fn %Octomap{x: x, y: y, energy: e, flashed: flashed} = octopus ->
+    |> Octomap.map(fn %Octomap{energy: e, flashed: flashed} = octopus ->
       if e > 9 and not flashed do
-        %Octomap{x: x, y: y, energy: 0, flashed: true}
+        %{octopus | energy: 0, just_flashed: true}
       else
         octopus
       end
@@ -144,7 +120,7 @@ defmodule AdventOfCode.Octomap do
         absorbed_energy =
           map
           |> did_they_flash?(octopus)
-          |> Enum.count(fn neighbour_flashed -> neighbour_flashed == true end)
+          |> Enum.count(fn neighbour_flashed -> neighbour_flashed end)
 
         %{octopus | energy: e + absorbed_energy}
       end
@@ -166,7 +142,7 @@ defmodule AdventOfCode.Octomap do
 
   def to_flashed(nil), do: false
 
-  def to_flashed(%Octomap{flashed: flashed}), do: flashed
+  def to_flashed(%Octomap{just_flashed: flashed}), do: flashed
 
   def upper_flashed?(map, %Octomap{x: x, y: y}) do
     if x - 1 < 0, do: false, else: map |> Enum.at(x - 1) |> Enum.at(y) |> to_flashed
