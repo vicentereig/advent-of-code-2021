@@ -19,7 +19,7 @@ defmodule AdventOfCode.Octomap do
 
     1..step_count
     |> Enum.map_reduce(initial_map, fn step, map ->
-      next = map |> next_octomap
+      next = map |> next_octomap |> Enum.to_list |> then(fn [map] -> map end)
       next |> Octomap.map(&to_energy/1) |> IO.inspect(label: "Step #{step}")
 
       flash_count =
@@ -53,46 +53,56 @@ defmodule AdventOfCode.Octomap do
 
   def _next_octomap(initial_map) do
     Stream.resource(
-    fn ->
-        map = initial_map
-        |> recharge
+      fn ->
+        map =
+          initial_map
+          |> recharge
 
         map |> count(fn %Octomap{energy: e} -> e > 9 end) |> IO.inspect(label: "start_count")
         map
-    end, # start_fun
-    fn prev_map -> #next_fun
-      map = prev_map
-      |> flash
-      |> propagate_energy
+      end,
 
-      map |> Octomap.map(&Octomap.to_energy/1) |> IO.inspect
-      next_map = map |> mark_flashed
+      # start_fun
+      # next_fun
+      fn prev_map ->
+        map =
+          prev_map
+          |> flash
+          |> propagate_energy
 
-      case map |> count(fn %Octomap{flashed: did_flash} -> did_flash end) |> IO.inspect(label: "next_count") do
-        0 -> {:halt, nil }
-        n -> {next_map, next_map}
-      end
-    end,
-    fn _ -> {} end # after_fun
+        map |> Octomap.map(&Octomap.to_energy/1) |> IO.inspect()
+        next_map = map |> mark_flashed
+
+        case map
+             |> count(fn %Octomap{flashed: did_flash} -> did_flash end)
+             |> IO.inspect(label: "next_count") do
+          0 -> {:halt, nil}
+          n -> {next_map, next_map}
+        end
+      end,
+      # after_fun
+      fn _ -> {} end
     )
   end
 
-
   def mark_flashed(map) do
     map
-    |> Octomap.map(fn octopus -> %{octopus | flashed: false } end)
+    |> Octomap.map(fn octopus -> %{octopus | flashed: false} end)
   end
 
   def next_octomap(initial_map) do
     initial_map
     |> recharge
     |> Stream.unfold(fn
-      [] -> nil
+      [] ->
+        nil
+
       map ->
         next_map = map |> flash |> propagate_energy
-        map |> count(fn %Octomap{flashed: did_flash} -> did_flash end) |> IO.inspect
+        map |> count(fn %Octomap{flashed: did_flash} -> did_flash end) |> IO.inspect()
+
         case map |> count(fn %Octomap{flashed: did_flash} -> did_flash end) do
-          0 -> {next_map |> flash |> mark_flashed , []}
+          0 -> {next_map |> flash |> mark_flashed, []}
           n -> {next_map |> mark_flashed, next_map |> mark_flashed}
         end
     end)
@@ -107,8 +117,9 @@ defmodule AdventOfCode.Octomap do
 
   def map(map, f) do
     map
-    |> Enum.map(fn row -> row
-                          |> Enum.map(fn octopus -> f.(octopus) end)
+    |> Enum.map(fn row ->
+      row
+      |> Enum.map(fn octopus -> f.(octopus) end)
     end)
   end
 
@@ -139,7 +150,6 @@ defmodule AdventOfCode.Octomap do
       end
     end)
   end
-
 
   def did_they_flash?(map, octopus) do
     [
