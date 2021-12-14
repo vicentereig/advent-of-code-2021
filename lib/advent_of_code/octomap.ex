@@ -53,10 +53,9 @@ defmodule AdventOfCode.Octomap do
 
   def next_octomap(initial_map) do
     Stream.resource(
-    fn -> initial_map end, # start_fun
+    fn -> initial_map |> recharge end, # start_fun
     fn prev_map -> #next_fun
       map = prev_map
-      |> recharge
       |> flash
       |> propagate_energy
 
