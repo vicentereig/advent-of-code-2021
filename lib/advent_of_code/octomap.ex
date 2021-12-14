@@ -51,47 +51,50 @@ defmodule AdventOfCode.Octomap do
     end)
   end
 
-  def next_octomap(initial_map) do
+  def _next_octomap(initial_map) do
     Stream.resource(
-    fn -> initial_map |> recharge end, # start_fun
+    fn ->
+        map = initial_map
+        |> recharge
+
+        map |> count(fn %Octomap{energy: e} -> e > 9 end) |> IO.inspect(label: "start_count")
+        map
+    end, # start_fun
     fn prev_map -> #next_fun
       map = prev_map
       |> flash
       |> propagate_energy
 
-      case map |> count(fn %Octomap{energy: e} -> e > 9 end) do
-        0 -> {:halt, map }
-        n -> {map, map}
+      map |> Octomap.map(&Octomap.to_energy/1) |> IO.inspect
+      next_map = map |> mark_flashed
+
+      case map |> count(fn %Octomap{flashed: did_flash} -> did_flash end) |> IO.inspect(label: "next_count") do
+        0 -> {:halt, nil }
+        n -> {next_map, next_map}
       end
     end,
-    fn _map -> # after
-
-    end
+    fn _ -> {} end # after_fun
     )
   end
 
-  def _next_octomap(initial_map) do
+
+  def mark_flashed(map) do
+    map
+    |> Octomap.map(fn octopus -> %{octopus | flashed: false } end)
+  end
+
+  def next_octomap(initial_map) do
     initial_map
+    |> recharge
     |> Stream.unfold(fn
       [] -> nil
       map ->
-        octopi_to_flash = map |> count(fn %Octomap{energy: e} -> e > 9 end)
-        next_map =
-          map
-          |> recharge
-          |> flash
-          |> propagate_energy
-
-        next_octopi_to_flash = next_map |> count(fn %Octomap{energy: e} -> e > 9 end)
-
-        IO.inspect(next_map |> Octomap.map(&Octomap.to_energy/1) , label: "next_map")
-        IO.inspect(next_octopi_to_flash, label: "next octopi")
-
-        {next_map, cond do
-          next_octopi_to_flash > 0 -> next_map
-          true -> []
+        next_map = map |> flash |> propagate_energy
+        map |> count(fn %Octomap{flashed: did_flash} -> did_flash end) |> IO.inspect
+        case map |> count(fn %Octomap{flashed: did_flash} -> did_flash end) do
+          0 -> {next_map |> flash |> mark_flashed , []}
+          n -> {next_map |> mark_flashed, next_map |> mark_flashed}
         end
-        }
     end)
   end
 
@@ -125,17 +128,18 @@ defmodule AdventOfCode.Octomap do
     map
     |> Octomap.map(fn %Octomap{energy: e} = octopus ->
       if e == 0 do
-        %{octopus | flashed: false}
+        octopus
       else
         absorbed_energy =
           map
           |> did_they_flash?(octopus)
           |> Enum.count(fn neighbour_flashed -> neighbour_flashed == true end)
 
-        %{octopus | flashed: false, energy: e + absorbed_energy}
+        %{octopus | energy: e + absorbed_energy}
       end
     end)
   end
+
 
   def did_they_flash?(map, octopus) do
     [

@@ -61,6 +61,7 @@ defmodule AdventOfCode.OctomapTest do
              |> Octomap.recharge()
              |> Octomap.flash()
              |> Octomap.propagate_energy()
+             |> Octomap.mark_flashed
              |> Octomap.map(&Octomap.to_energy/1)
   end
 
@@ -76,8 +77,10 @@ defmodule AdventOfCode.OctomapTest do
              |> Octomap.recharge()
              |> Octomap.flash()
              |> Octomap.propagate_energy()
+             |> Octomap.mark_flashed()
              |> Octomap.flash()
              |> Octomap.propagate_energy()
+             |> Octomap.mark_flashed()
              |> Octomap.map(&Octomap.to_energy/1)
   end
 
@@ -100,10 +103,11 @@ defmodule AdventOfCode.OctomapTest do
              input
              |> Octomap.create_octomap()
              |> Octomap.next_octomap()
-             |> IO.inspect()
-             |> Enum.to_list()
-             |> IO.inspect()
-             |> Octomap.map(&Octomap.to_energy/1)
+             |> Enum.to_list
+             |> then( fn [map] ->
+                map |> Octomap.map(&Octomap.to_energy/1)
+             end)
+
   end
 
   test "what is the opposite of Enum.reduce? Unfold." do
@@ -136,7 +140,11 @@ defmodule AdventOfCode.OctomapTest do
              |> Octomap.create_octomap()
              |> Octomap.next_octomap()
              |> Octomap.next_octomap()
-             |> Octomap.map(&Octomap.to_energy/1)
+             |> Enum.to_list
+             |> then( fn [map] ->
+               map |> Octomap.map(&Octomap.to_energy/1)
+             end)
+
   end
 
   test "upper octopus did not flash" do
